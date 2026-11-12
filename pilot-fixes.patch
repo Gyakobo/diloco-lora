@@ -1,0 +1,221 @@
+diff --git a/aggregate.py b/aggregate.py
+index e06027c..b9ac0d0 100644
+--- a/aggregate.py
++++ b/aggregate.py
+@@ -31,6 +31,7 @@ def load(out_dir="results"):
+         if r["mode"] != "diloco":
+             r.update(k=None, H=None, outer_lr=None, outer_momentum=None, split="all")
+         r.update(val_loss=s["final_val_loss"], val_acc=s["final_val_acc"], diverged=s["diverged"],
++                 best_val_loss=s.get("best_val_loss"), best_step=s.get("best_step"),
+                  up_mb=s["comm_up"] * 2 / 1e6, down_mb=s["comm_down"] * 2 / 1e6,
+                  minutes=s["minutes"], name=s["name"])
+         rows.append(r)
+@@ -41,6 +42,7 @@ def summary(df):
+     g = df.groupby([k for k in KEYS], dropna=False)
+     out = g.agg(n=("seed", "count"), loss_mean=("val_loss", "mean"), loss_std=("val_loss", "std"),
+                 acc_mean=("val_acc", "mean"), acc_std=("val_acc", "std"),
++                best_mean=("best_val_loss", "mean"), best_step=("best_step", "mean"),
+                 up_mb=("up_mb", "mean"), down_mb=("down_mb", "mean"),
+                 diverged=("diverged", "sum")).reset_index()
+     return out.sort_values(["task", "split", "agg", "outer_momentum", "outer_lr"])
+diff --git a/configs/0b_pilot_dolly.yaml b/configs/0b_pilot_dolly.yaml
+new file mode 100644
+index 0000000..c260aa4
+--- /dev/null
++++ b/configs/0b_pilot_dolly.yaml
+@@ -0,0 +1,17 @@
++# Pilot 2 (2026-11-12): pilot 1 showed DiLoCo over-fitting Dolly at batch 8 per worker
++# (~2.3 epochs; val loss bottomed at step ~650 then rose). Check that batch 4 per worker
++# (~1.15 epochs, same 1000 steps and 20 rounds) removes it, for sync and DiLoCo.
++base:
++  task: dolly
++  block_size: 512
++  agg: fedit
++  rank: 16
++  lora_alpha: 32
++  steps: 1000
++  lr: 0.0003
++  micro_batch: 4
++  seed: 0
++runs:
++  - {mode: sync, batch_size: 16}
++  - {mode: diloco, k: 4, H: 50, batch_size: 4}
++  - {mode: diloco, k: 4, H: 50, batch_size: 4, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+diff --git a/configs/1_core.yaml b/configs/1_core.yaml
+index d13bf5d..e278c65 100644
+--- a/configs/1_core.yaml
++++ b/configs/1_core.yaml
+@@ -12,10 +12,10 @@ base:
+   lr: 0.0003
+   seed: 0
+ grids:
+-  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: iid}
+-    - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: iid}
+-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
++  - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: iid}
++    - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
++    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid}
++    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
+   - - {agg: fedit}
+     - {agg: ffa}
+     - {agg: fedex}
+diff --git a/configs/1b_core_seeds.yaml b/configs/1b_core_seeds.yaml
+index ad7630a..bd8601d 100644
+--- a/configs/1b_core_seeds.yaml
++++ b/configs/1b_core_seeds.yaml
+@@ -11,10 +11,10 @@ base:
+   steps: 1000
+   lr: 0.0003
+ grids:
+-  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: iid}
+-    - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: iid}
+-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
++  - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: iid}
++    - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
++    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid}
++    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
+   - - {agg: fedit}
+     - {agg: ffa}
+     - {agg: fedex}
+diff --git a/configs/2_references.yaml b/configs/2_references.yaml
+index 6d7deee..a0ba6be 100644
+--- a/configs/2_references.yaml
++++ b/configs/2_references.yaml
+@@ -8,9 +8,9 @@ base:
+   lora_alpha: 32
+   lr: 0.0003
+ grids:
+-  - - {task: dolly,  block_size: 512, mode: sync,  batch_size: 32, micro_batch: 4}
+-    - {task: dolly,  block_size: 512, mode: local, batch_size: 8,  micro_batch: 4}
+-    - {task: agnews, block_size: 256, mode: sync,  batch_size: 64, micro_batch: 16, agnews_train: 40000}
+-    - {task: agnews, block_size: 256, mode: local, batch_size: 16, micro_batch: 16, agnews_train: 40000}
++  - - {task: dolly,  block_size: 512, mode: sync,  batch_size: 16, micro_batch: 4}
++    - {task: dolly,  block_size: 512, mode: local, batch_size: 4,  micro_batch: 4}
++    - {task: agnews, block_size: 256, mode: sync,  batch_size: 64, micro_batch: 16, agnews_train: 40000, lr: 0.001}
++    - {task: agnews, block_size: 256, mode: local, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001}
+ sweep:
+   seed: [0, 1, 2]
+diff --git a/configs/2b_full_ft.yaml b/configs/2b_full_ft.yaml
+index cfa4355..2ac9bc7 100644
+--- a/configs/2b_full_ft.yaml
++++ b/configs/2b_full_ft.yaml
+@@ -9,8 +9,8 @@ base:
+   steps: 1000
+   lr: 0.00005
+ grids:
+-  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: iid}
+-    - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
++  - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: iid}
++    - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
+     - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: iid}
+     - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
+   - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+diff --git a/configs/3_mechanism.yaml b/configs/3_mechanism.yaml
+index 55d41d5..6a363b1 100644
+--- a/configs/3_mechanism.yaml
++++ b/configs/3_mechanism.yaml
+@@ -10,8 +10,8 @@ base:
+   steps: 1000
+   lr: 0.0003
+ grids:
+-  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
++  - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
++    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
+   - - {agg: fedit}
+     - {agg: ffa}
+     - {agg: merge, inner_state: reset}
+diff --git a/configs/4_noniid.yaml b/configs/4_noniid.yaml
+index eef4f0c..b31855a 100644
+--- a/configs/4_noniid.yaml
++++ b/configs/4_noniid.yaml
+@@ -12,7 +12,7 @@ base:
+   rank: 16
+   lora_alpha: 32
+   steps: 1000
+-  lr: 0.0003
++  lr: 0.001
+ grids:
+   - - {agg: fedit}
+     - {agg: ffa}
+diff --git a/configs/5_scale.yaml b/configs/5_scale.yaml
+index 764bb85..606b2c3 100644
+--- a/configs/5_scale.yaml
++++ b/configs/5_scale.yaml
+@@ -10,13 +10,13 @@ base:
+   steps: 1000
+   lr: 0.0003
+ grids:
+-  - - {mode: diloco, k: 4, H: 50, batch_size: 8, split: group, agg: fedit}
+-    - {mode: diloco, k: 4, H: 50, batch_size: 8, split: group, agg: ffa}
+-    - {mode: diloco, k: 4, H: 50, batch_size: 8, split: group, agg: merge, inner_state: reset}
++  - - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: fedit}
++    - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: ffa}
++    - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: merge, inner_state: reset}
+   - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+     - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+ sweep:
+   seed: [0, 1]
+ runs:
+-  - {mode: sync, agg: fedit, batch_size: 32, seed: 0}
+-  - {mode: sync, agg: fedit, batch_size: 32, seed: 1}
++  - {mode: sync, agg: fedit, batch_size: 16, seed: 0}
++  - {mode: sync, agg: fedit, batch_size: 16, seed: 1}
+diff --git a/configs/6_downlink.yaml b/configs/6_downlink.yaml
+index 636832f..a68df36 100644
+--- a/configs/6_downlink.yaml
++++ b/configs/6_downlink.yaml
+@@ -14,8 +14,8 @@ base:
+   outer_momentum: 0.9
+   nesterov: true
+ grids:
+-  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
++  - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
++    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
+ sweep:
+   down_rank: [16, 64, 256]
+   seed: [0, 1]
+diff --git a/sweep.py b/sweep.py
+index d6b9276..b4431df 100644
+--- a/sweep.py
++++ b/sweep.py
+@@ -22,9 +22,9 @@ import time
+ 
+ import yaml
+ 
+-# Seconds per worker step (batch 16) for GPT-2 small on the RTX 3070 Ti.
+-# PLACEHOLDER: update both numbers from the pilot (printed in each run's .json as `minutes`).
+-SEC_PER_WORKER_STEP = {"dolly": 0.20, "agnews": 0.08}
++# Seconds per worker step at batch 16 for GPT-2 small on the RTX 3070 Ti, including evaluation.
++# Measured in the pilot (2026-11-12): Dolly 0.35 s, AG News 0.15 s.
++SEC_PER_WORKER_STEP = {"dolly": 0.35, "agnews": 0.15}
+ 
+ 
+ def expand(path):
+diff --git a/train.py b/train.py
+index 722cc0f..0918dba 100644
+--- a/train.py
++++ b/train.py
+@@ -132,7 +132,7 @@ def build_model(cfg):
+     tok = AutoTokenizer.from_pretrained(cfg.model_name)
+     if tok.pad_token_id is None:
+         tok.pad_token = tok.eos_token
+-    model = AutoModelForCausalLM.from_pretrained(cfg.model_name, torch_dtype=torch.float32)
++    model = AutoModelForCausalLM.from_pretrained(cfg.model_name, dtype=torch.float32)
+     return model.to(cfg.device), tok
+ 
+ 
+@@ -485,7 +485,10 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
+     final_loss, final_acc = evaluate(model, task["val"], cfg, pad_id, task.get("label_ids"),
+                                      task.get("val_labels"))
+     last = rows[-1]
++    # best periodic validation loss (500-example subset) and where it happened: shows over-fitting
++    best = min(rows, key=lambda r: r["val_loss"] if math.isfinite(r["val_loss"]) else float("inf"))
+     summary = dict(config=asdict(cfg), name=name, final_val_loss=final_loss, final_val_acc=final_acc,
++                   best_val_loss=best["val_loss"], best_step=best["step"],
+                    diverged=not math.isfinite(final_loss), steps_done=last["step"],
+                    comm_rounds=last["comm_rounds"], comm_up=last["comm_up"], comm_down=last["comm_down"],
+                    trainable_params=sum(p.numel() for p in trainable),
