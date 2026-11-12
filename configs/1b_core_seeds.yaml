@@ -1,0 +1,25 @@
+# Phase 1b -- seeds 1 and 2 for the headline comparison (64 runs).
+# BEFORE RUNNING: replace the Nesterov outer_lr (0.7 below) with the best value per
+# (setting, agg) from 1_core.yaml (python aggregate.py prints it). Pre-commit to the rule
+# "best seed-0 val loss" so the choice is not made after seeing seeds 1-2.
+base:
+  mode: diloco
+  k: 4
+  H: 50
+  rank: 16
+  lora_alpha: 32
+  steps: 1000
+  lr: 0.0003
+grids:
+  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: iid}
+    - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: iid}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
+  - - {agg: fedit}
+    - {agg: ffa}
+    - {agg: fedex}
+    - {agg: merge, inner_state: reset}
+  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+sweep:
+  seed: [1, 2]

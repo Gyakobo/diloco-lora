@@ -1,0 +1,16 @@
+# Phase 2 -- reference points, 3 seeds each (12 runs):
+#   sync   LoRA data-parallel training (batch k*B, communicates every step) = the quality target
+#   local  one worker alone (batch B) = what you get without collaborating
+base:
+  steps: 1000
+  agg: fedit
+  rank: 16
+  lora_alpha: 32
+  lr: 0.0003
+grids:
+  - - {task: dolly,  block_size: 512, mode: sync,  batch_size: 32, micro_batch: 4}
+    - {task: dolly,  block_size: 512, mode: local, batch_size: 8,  micro_batch: 4}
+    - {task: agnews, block_size: 256, mode: sync,  batch_size: 64, micro_batch: 16, agnews_train: 40000}
+    - {task: agnews, block_size: 256, mode: local, batch_size: 16, micro_batch: 16, agnews_train: 40000}
+sweep:
+  seed: [0, 1, 2]

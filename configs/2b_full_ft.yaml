@@ -1,0 +1,19 @@
+# Phase 2b -- DiLoCo FULL fine-tuning (no LoRA), plain averaging and Nesterov, 3 seeds (48 runs).
+# Full fine-tuning uses a lower inner lr (5e-5 is standard for GPT-2; check it in the pilot
+# spirit with one quick sync run if time allows).
+base:
+  mode: diloco
+  agg: full
+  k: 4
+  H: 50
+  steps: 1000
+  lr: 0.00005
+grids:
+  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: iid}
+    - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: iid}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
+  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+sweep:
+  seed: [0, 1, 2]

@@ -1,0 +1,26 @@
+# Phase 1 -- the main result (seed 0): 4 aggregation rules x 4 outer optimizers x 4 settings.
+# 64 runs. Outer lr for Nesterov is tuned here; plain averaging (outer lr 1, no momentum) is FedAvg.
+# BEFORE RUNNING: set `lr` in base to the best value from the pilot (if it differs per task,
+# move lr into the task bundles below).
+base:
+  mode: diloco
+  k: 4
+  H: 50
+  rank: 16
+  lora_alpha: 32
+  steps: 1000
+  lr: 0.0003
+  seed: 0
+grids:
+  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: iid}
+    - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: iid}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
+  - - {agg: fedit}
+    - {agg: ffa}
+    - {agg: fedex}
+    - {agg: merge, inner_state: reset}
+  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
+    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+    - {outer_lr: 1.0, outer_momentum: 0.9, nesterov: true}

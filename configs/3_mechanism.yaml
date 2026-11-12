@@ -1,0 +1,29 @@
+# Phase 3 -- WHY: how sync interval H, workers k and rank r change the momentum effect and the
+# aggregation error. One factor at a time around the core setting (k=4, H=50, r=16),
+# on the two non-i.i.d. settings, 2 seeds. Inexact (fedit) vs exact (ffa, merge).
+base:
+  mode: diloco
+  k: 4
+  H: 50
+  rank: 16
+  lora_alpha: 32
+  steps: 1000
+  lr: 0.0003
+grids:
+  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
+  - - {agg: fedit}
+    - {agg: ffa}
+    - {agg: merge, inner_state: reset}
+  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+  - - {H: 10}
+    - {H: 25}
+    - {H: 100}
+    - {H: 250}
+    - {k: 2}
+    - {k: 8}
+    - {rank: 4, lora_alpha: 8}
+    - {rank: 64, lora_alpha: 128}
+sweep:
+  seed: [0, 1]

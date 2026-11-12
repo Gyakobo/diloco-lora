@@ -1,0 +1,17 @@
+# Phase 0 (run FIRST): pick the inner learning rate on the data-parallel (sync) baseline,
+# check for over-fitting (val loss should still fall or plateau at the last eval, not rise),
+# and time one DiLoCo run per task to update SEC_PER_WORKER_STEP in sweep.py.
+base:
+  agg: fedit
+  rank: 16
+  lora_alpha: 32
+  seed: 0
+  steps: 1000
+grids:
+  - - {task: dolly,  block_size: 512, mode: sync, batch_size: 32, micro_batch: 4}
+    - {task: agnews, block_size: 256, mode: sync, batch_size: 64, micro_batch: 16, agnews_train: 40000}
+sweep:
+  lr: [0.0001, 0.0003, 0.001]
+runs:
+  - {task: dolly,  block_size: 512, mode: diloco, k: 4, H: 50, batch_size: 8,  micro_batch: 4,  lr: 0.0003}
+  - {task: agnews, block_size: 256, mode: diloco, k: 4, H: 50, batch_size: 16, micro_batch: 16, lr: 0.0003, agnews_train: 40000}

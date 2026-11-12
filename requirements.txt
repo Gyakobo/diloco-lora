@@ -1,0 +1,9 @@
+torch>=2.3
+transformers>=4.44
+datasets>=2.20
+numpy
+pandas
+scipy
+pyyaml
+pytest
+matplotlib

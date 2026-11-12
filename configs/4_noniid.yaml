@@ -1,0 +1,24 @@
+# Phase 4 -- strength of label skew on AG News (Dirichlet alpha; iid and 0.1 are in the core).
+base:
+  mode: diloco
+  task: agnews
+  block_size: 256
+  batch_size: 16
+  micro_batch: 16
+  agnews_train: 40000
+  split: dirichlet
+  k: 4
+  H: 50
+  rank: 16
+  lora_alpha: 32
+  steps: 1000
+  lr: 0.0003
+grids:
+  - - {agg: fedit}
+    - {agg: ffa}
+    - {agg: merge, inner_state: reset}
+  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+sweep:
+  alpha: [0.05, 0.3, 1.0]
+  seed: [0, 1]

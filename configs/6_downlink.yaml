@@ -1,0 +1,21 @@
+# Phase 6 -- merge sends a DENSE update back to workers. How much of that can be cut by sending
+# only a rank-r_d SVD of the update (with error feedback)? Communication/quality trade-off.
+base:
+  mode: diloco
+  agg: merge
+  inner_state: reset
+  k: 4
+  H: 50
+  rank: 16
+  lora_alpha: 32
+  steps: 1000
+  lr: 0.0003
+  outer_lr: 0.7
+  outer_momentum: 0.9
+  nesterov: true
+grids:
+  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
+sweep:
+  down_rank: [16, 64, 256]
+  seed: [0, 1]
