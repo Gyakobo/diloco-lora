@@ -12,10 +12,10 @@ base:
   lr: 0.0003
   seed: 0
 grids:
-  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: iid}
-    - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: iid}
-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
+  - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: iid}
+    - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
   - - {agg: fedit}
     - {agg: ffa}
     - {agg: fedex}

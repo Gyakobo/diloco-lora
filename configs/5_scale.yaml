@@ -10,13 +10,13 @@ base:
   steps: 1000
   lr: 0.0003
 grids:
-  - - {mode: diloco, k: 4, H: 50, batch_size: 8, split: group, agg: fedit}
-    - {mode: diloco, k: 4, H: 50, batch_size: 8, split: group, agg: ffa}
-    - {mode: diloco, k: 4, H: 50, batch_size: 8, split: group, agg: merge, inner_state: reset}
+  - - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: fedit}
+    - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: ffa}
+    - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: merge, inner_state: reset}
   - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
     - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
 sweep:
   seed: [0, 1]
 runs:
-  - {mode: sync, agg: fedit, batch_size: 32, seed: 0}
-  - {mode: sync, agg: fedit, batch_size: 32, seed: 1}
+  - {mode: sync, agg: fedit, batch_size: 16, seed: 0}
+  - {mode: sync, agg: fedit, batch_size: 16, seed: 1}

@@ -132,7 +132,7 @@ def build_model(cfg):
     tok = AutoTokenizer.from_pretrained(cfg.model_name)
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
-    model = AutoModelForCausalLM.from_pretrained(cfg.model_name, torch_dtype=torch.float32)
+    model = AutoModelForCausalLM.from_pretrained(cfg.model_name, dtype=torch.float32)
     return model.to(cfg.device), tok
 
 
@@ -485,7 +485,10 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
     final_loss, final_acc = evaluate(model, task["val"], cfg, pad_id, task.get("label_ids"),
                                      task.get("val_labels"))
     last = rows[-1]
+    # best periodic validation loss (500-example subset) and where it happened: shows over-fitting
+    best = min(rows, key=lambda r: r["val_loss"] if math.isfinite(r["val_loss"]) else float("inf"))
     summary = dict(config=asdict(cfg), name=name, final_val_loss=final_loss, final_val_acc=final_acc,
+                   best_val_loss=best["val_loss"], best_step=best["step"],
                    diverged=not math.isfinite(final_loss), steps_done=last["step"],
                    comm_rounds=last["comm_rounds"], comm_up=last["comm_up"], comm_down=last["comm_down"],
                    trainable_params=sum(p.numel() for p in trainable),

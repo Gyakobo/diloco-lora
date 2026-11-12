@@ -12,7 +12,7 @@ base:
   rank: 16
   lora_alpha: 32
   steps: 1000
-  lr: 0.0003
+  lr: 0.001
 grids:
   - - {agg: fedit}
     - {agg: ffa}

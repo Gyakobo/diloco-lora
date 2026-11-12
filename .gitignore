@@ -2,3 +2,8 @@ data/
 __pycache__/
 *.pyc
 .pytest_cache/
+*:Zone.Identifier
+venv/
+.venv/
+env/
+*:Zone.Identifier

@@ -14,8 +14,8 @@ base:
   outer_momentum: 0.9
   nesterov: true
 grids:
-  - - {task: dolly,  block_size: 512, batch_size: 8,  micro_batch: 4,  split: group}
-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, split: dirichlet, alpha: 0.1}
+  - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
+    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
 sweep:
   down_rank: [16, 64, 256]
   seed: [0, 1]

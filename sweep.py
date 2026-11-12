@@ -22,9 +22,9 @@ import time
 
 import yaml
 
-# Seconds per worker step (batch 16) for GPT-2 small on the RTX 3070 Ti.
-# PLACEHOLDER: update both numbers from the pilot (printed in each run's .json as `minutes`).
-SEC_PER_WORKER_STEP = {"dolly": 0.20, "agnews": 0.08}
+# Seconds per worker step at batch 16 for GPT-2 small on the RTX 3070 Ti, including evaluation.
+# Measured in the pilot (2026-11-12): Dolly 0.35 s, AG News 0.15 s.
+SEC_PER_WORKER_STEP = {"dolly": 0.35, "agnews": 0.15}
 
 
 def expand(path):

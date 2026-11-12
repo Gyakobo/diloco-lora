@@ -31,6 +31,7 @@ def load(out_dir="results"):
         if r["mode"] != "diloco":
             r.update(k=None, H=None, outer_lr=None, outer_momentum=None, split="all")
         r.update(val_loss=s["final_val_loss"], val_acc=s["final_val_acc"], diverged=s["diverged"],
+                 best_val_loss=s.get("best_val_loss"), best_step=s.get("best_step"),
                  up_mb=s["comm_up"] * 2 / 1e6, down_mb=s["comm_down"] * 2 / 1e6,
                  minutes=s["minutes"], name=s["name"])
         rows.append(r)
@@ -41,6 +42,7 @@ def summary(df):
     g = df.groupby([k for k in KEYS], dropna=False)
     out = g.agg(n=("seed", "count"), loss_mean=("val_loss", "mean"), loss_std=("val_loss", "std"),
                 acc_mean=("val_acc", "mean"), acc_std=("val_acc", "std"),
+                best_mean=("best_val_loss", "mean"), best_step=("best_step", "mean"),
                 up_mb=("up_mb", "mean"), down_mb=("down_mb", "mean"),
                 diverged=("diverged", "sum")).reset_index()
     return out.sort_values(["task", "split", "agg", "outer_momentum", "outer_lr"])

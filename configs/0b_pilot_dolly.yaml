@@ -1,0 +1,17 @@
+# Pilot 2 (2026-11-12): pilot 1 showed DiLoCo over-fitting Dolly at batch 8 per worker
+# (~2.3 epochs; val loss bottomed at step ~650 then rose). Check that batch 4 per worker
+# (~1.15 epochs, same 1000 steps and 20 rounds) removes it, for sync and DiLoCo.
+base:
+  task: dolly
+  block_size: 512
+  agg: fedit
+  rank: 16
+  lora_alpha: 32
+  steps: 1000
+  lr: 0.0003
+  micro_batch: 4
+  seed: 0
+runs:
+  - {mode: sync, batch_size: 16}
+  - {mode: diloco, k: 4, H: 50, batch_size: 4}
+  - {mode: diloco, k: 4, H: 50, batch_size: 4, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}

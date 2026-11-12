@@ -8,9 +8,9 @@ base:
   lora_alpha: 32
   lr: 0.0003
 grids:
-  - - {task: dolly,  block_size: 512, mode: sync,  batch_size: 32, micro_batch: 4}
-    - {task: dolly,  block_size: 512, mode: local, batch_size: 8,  micro_batch: 4}
-    - {task: agnews, block_size: 256, mode: sync,  batch_size: 64, micro_batch: 16, agnews_train: 40000}
-    - {task: agnews, block_size: 256, mode: local, batch_size: 16, micro_batch: 16, agnews_train: 40000}
+  - - {task: dolly,  block_size: 512, mode: sync,  batch_size: 16, micro_batch: 4}
+    - {task: dolly,  block_size: 512, mode: local, batch_size: 4,  micro_batch: 4}
+    - {task: agnews, block_size: 256, mode: sync,  batch_size: 64, micro_batch: 16, agnews_train: 40000, lr: 0.001}
+    - {task: agnews, block_size: 256, mode: local, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001}
 sweep:
   seed: [0, 1, 2]
