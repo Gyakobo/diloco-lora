@@ -5,6 +5,9 @@ Summarise every finished run in results/ (no GPU needed).
     python aggregate.py --tune          # best Nesterov outer lr per (task, split, agg) on seed 0
     python aggregate.py --paired        # Nesterov vs plain averaging, paired by seed
 
+Primary metric: TEST loss at the checkpoint with the lowest validation loss (early stopping).
+Validation is used for choosing (checkpoint, outer lr); test is never used for choosing.
+
 Communication is reported in MB per worker assuming bf16 transport (2 bytes per value).
 """
 import argparse
@@ -30,7 +33,10 @@ def load(out_dir="results"):
             r["alpha"] = None
         if r["mode"] != "diloco":
             r.update(k=None, H=None, outer_lr=None, outer_momentum=None, split="all")
-        r.update(val_loss=s["final_val_loss"], val_acc=s["final_val_acc"], diverged=s["diverged"],
+        # PRIMARY metric: test loss at the best-validation checkpoint (early stopping)
+        r.update(test_loss=s.get("best_test_loss"), test_acc=s.get("best_test_acc"),
+                 final_test_loss=s.get("final_test_loss"), final_test_acc=s.get("final_test_acc"),
+                 val_loss=s["final_val_loss"], val_acc=s["final_val_acc"], diverged=s["diverged"],
                  best_val_loss=s.get("best_val_loss"), best_step=s.get("best_step"),
                  up_mb=s["comm_up"] * 2 / 1e6, down_mb=s["comm_down"] * 2 / 1e6,
                  minutes=s["minutes"], name=s["name"])
@@ -40,9 +46,9 @@ def load(out_dir="results"):
 
 def summary(df):
     g = df.groupby([k for k in KEYS], dropna=False)
-    out = g.agg(n=("seed", "count"), loss_mean=("val_loss", "mean"), loss_std=("val_loss", "std"),
-                acc_mean=("val_acc", "mean"), acc_std=("val_acc", "std"),
-                best_mean=("best_val_loss", "mean"), best_step=("best_step", "mean"),
+    out = g.agg(n=("seed", "count"), test_mean=("test_loss", "mean"), test_std=("test_loss", "std"),
+                acc_mean=("test_acc", "mean"), acc_std=("test_acc", "std"),
+                final_test=("final_test_loss", "mean"), best_step=("best_step", "mean"),
                 up_mb=("up_mb", "mean"), down_mb=("down_mb", "mean"),
                 diverged=("diverged", "sum")).reset_index()
     return out.sort_values(["task", "split", "agg", "outer_momentum", "outer_lr"])
@@ -50,8 +56,8 @@ def summary(df):
 
 def tune(df):
     d = df[(df["mode"] == "diloco") & (df["seed"] == 0) & (df["outer_momentum"] > 0)]
-    idx = d.groupby(["task", "split", "agg"])["val_loss"].idxmin()
-    return d.loc[idx, ["task", "split", "agg", "outer_lr", "val_loss"]]
+    idx = d.groupby(["task", "split", "agg"])["best_val_loss"].idxmin()   # tuned on VALIDATION only
+    return d.loc[idx, ["task", "split", "agg", "outer_lr", "best_val_loss"]]
 
 
 def paired(df):
@@ -69,7 +75,7 @@ def paired(df):
         best_lr = n.groupby("outer_lr")["seed"].count().idxmax()
         n = n[n["outer_lr"] == best_lr]
         m = a.merge(n, on="seed", suffixes=("_avg", "_nes"))
-        diff = (m["val_loss_nes"] - m["val_loss_avg"]).to_numpy()
+        diff = (m["test_loss_nes"] - m["test_loss_avg"]).to_numpy()
         if len(diff) >= 2:
             ci = stats.t.interval(0.95, len(diff) - 1, loc=diff.mean(), scale=stats.sem(diff))
         else:

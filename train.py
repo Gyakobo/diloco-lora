@@ -460,6 +460,12 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
         return None
     model, task, pad_id, layers, trainable = setup(cfg, model, task)
     rows, t0 = [], time.time()
+    # tensors that can change during training; a CPU copy is kept at the best validation loss
+    if cfg.agg == "full":
+        mutable = dict(model.named_parameters())
+    else:
+        mutable = {f"{n}.{k}": getattr(m, k) for n, m in layers for k in ("weight", "lora_A", "lora_B")}
+    best = dict(loss=float("inf"), step=None, state=None)
     if cfg.device.startswith("cuda"):
         torch.cuda.reset_peak_memory_stats()
     workers = cfg.k if cfg.mode == "diloco" else 1
@@ -473,6 +479,9 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
                    comm_up=stats.get("comm_up", 0), comm_down=stats.get("comm_down", 0),
                    lr=lr_at(max(step - 1, 0), cfg), elapsed_s=round(time.time() - t0, 1))
         rows.append(row)
+        if math.isfinite(vl) and vl < best["loss"]:
+            best.update(loss=vl, step=step,
+                        state={k: t.detach().to("cpu", copy=True) for k, t in mutable.items()})
         if verbose:
             tl = f"{train_loss:.4f}" if train_loss is not None else "  -   "
             a = f" | acc {acc:.3f}" if acc is not None else ""
@@ -492,14 +501,23 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
     else:
         raise ValueError(cfg.mode)
 
-    # final evaluation on the FULL validation set
-    final_loss, final_acc = evaluate(model, task["val"], cfg, pad_id, task.get("label_ids"),
-                                     task.get("val_labels"))
+    # final model: FULL validation set and the held-out test set
+    lab = task.get("label_ids")
+    final_loss, final_acc = evaluate(model, task["val"], cfg, pad_id, lab, task.get("val_labels"))
+    final_test, final_test_acc = evaluate(model, task["test"], cfg, pad_id, lab, task.get("test_labels"))
+    # early stopping: the checkpoint with the lowest periodic validation loss, scored on TEST
+    if best["state"] is not None:
+        with torch.no_grad():
+            for k, t in mutable.items():
+                t.copy_(best["state"][k].to(t.device))
+        best_test, best_test_acc = evaluate(model, task["test"], cfg, pad_id, lab, task.get("test_labels"))
+    else:
+        best_test, best_test_acc = float("nan"), None
     last = rows[-1]
-    # best periodic validation loss (500-example subset) and where it happened: shows over-fitting
-    best = min(rows, key=lambda r: r["val_loss"] if math.isfinite(r["val_loss"]) else float("inf"))
     summary = dict(config=asdict(cfg), name=name, final_val_loss=final_loss, final_val_acc=final_acc,
-                   best_val_loss=best["val_loss"], best_step=best["step"],
+                   final_test_loss=final_test, final_test_acc=final_test_acc,
+                   best_val_loss=best["loss"], best_step=best["step"],
+                   best_test_loss=best_test, best_test_acc=best_test_acc,
                    diverged=not math.isfinite(final_loss), steps_done=last["step"],
                    comm_rounds=last["comm_rounds"], comm_up=last["comm_up"], comm_down=last["comm_down"],
                    trainable_params=sum(p.numel() for p in trainable),
@@ -507,8 +525,10 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
                    peak_mem_gb=(round(torch.cuda.max_memory_allocated() / 1e9, 2)
                                 if cfg.device.startswith("cuda") else None))
     if verbose:
-        print(f"done: final val loss {final_loss:.4f}"
-              f"{f' | acc {final_acc:.4f}' if final_acc is not None else ''} | {summary['minutes']} min")
+        print(f"done: final val {final_loss:.4f} | final test {final_test:.4f} | "
+              f"best-val checkpoint (step {best['step']}) test {best_test:.4f}"
+              f"{f' | test acc {best_test_acc:.4f}' if best_test_acc is not None else ''}"
+              f" | {summary['minutes']} min")
     if write:
         os.makedirs(cfg.out_dir, exist_ok=True)
         with open(os.path.join(cfg.out_dir, name + ".csv"), "w", newline="") as f:

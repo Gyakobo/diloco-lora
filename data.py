@@ -28,10 +28,14 @@ AGNEWS_TEMPLATE = ("Classify the topic of this news article as World, Sports, Bu
 # loading + tokenizing (cached)
 # ---------------------------------------------------------------------------
 def load_task(cfg, tok):
-    """Returns dict(train=[(ids, plen)], train_groups=np.array, val=[(ids, plen)],
-                    val_labels=np.array or None, label_ids=list or None)."""
+    """Returns dict(train=[(ids, plen)], train_groups=np.array, val=[(ids, plen)], test=[...],
+                    val_labels / test_labels = np.array or None, label_ids=list or None).
+
+    val  (1000) is used for monitoring and to pick the early-stopping checkpoint.
+    test (1000) is only evaluated at the end, at the final and at the best-val checkpoint.
+    """
     tag = cfg.model_name.replace("/", "_")
-    path = os.path.join(cfg.data_dir, f"{cfg.task}_{tag}_b{cfg.block_size}.pt")
+    path = os.path.join(cfg.data_dir, f"{cfg.task}_{tag}_b{cfg.block_size}_v2.pt")
     if os.path.exists(path):
         return torch.load(path, weights_only=False)
     if cfg.task == "dolly":
@@ -68,11 +72,10 @@ def _dolly(cfg, tok):
             groups.append(cats.index(ex["category"]))
     rng = np.random.default_rng(1234)                # fixed split, independent of run seed
     perm = rng.permutation(len(items))
-    n_val = 1000
-    val_idx, tr_idx = perm[:n_val], perm[n_val:]
+    val_idx, test_idx, tr_idx = perm[:1000], perm[1000:2000], perm[2000:]
     return dict(train=[items[i] for i in tr_idx], train_groups=np.array(groups)[tr_idx],
-                val=[items[i] for i in val_idx], val_labels=None, label_ids=None,
-                group_names=cats)
+                val=[items[i] for i in val_idx], test=[items[i] for i in test_idx],
+                val_labels=None, test_labels=None, label_ids=None, group_names=cats)
 
 
 def _agnews(cfg, tok):
@@ -81,7 +84,8 @@ def _agnews(cfg, tok):
     te = load_dataset("fancyzhx/ag_news", split="test")
     rng = np.random.default_rng(1234)
     tr_idx = rng.permutation(len(tr))[:cfg.agnews_train]
-    te_idx = rng.permutation(len(te))[:1000]
+    te_perm = rng.permutation(len(te))
+    te_idx, test_idx = te_perm[:1000], te_perm[1000:2000]
 
     # truncate the article so prompt + label always fit in the window
     overhead = len(tok(AGNEWS_TEMPLATE.format(text=""), add_special_tokens=False)["input_ids"])
@@ -99,16 +103,20 @@ def _agnews(cfg, tok):
         if e:
             train.append(e)
             groups.append(ex["label"])
-    val, labels = [], []
-    for i in te_idx:
-        ex = te[int(i)]
-        e = enc(ex)
-        if e:
-            val.append(e)
-            labels.append(ex["label"])
+    def held_out(indices):
+        xs, ys = [], []
+        for i in indices:
+            ex = te[int(i)]
+            e = enc(ex)
+            if e:
+                xs.append(e)
+                ys.append(ex["label"])
+        return xs, np.array(ys)
+    val, labels = held_out(te_idx)
+    test, test_labels = held_out(test_idx)
     label_ids = [tok(l, add_special_tokens=False)["input_ids"] for l in AGNEWS_LABELS]
-    return dict(train=train, train_groups=np.array(groups), val=val,
-                val_labels=np.array(labels), label_ids=label_ids,
+    return dict(train=train, train_groups=np.array(groups), val=val, test=test,
+                val_labels=labels, test_labels=test_labels, label_ids=label_ids,
                 group_names=[l.strip() for l in AGNEWS_LABELS])
 
 

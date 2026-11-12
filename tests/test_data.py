@@ -32,9 +32,9 @@ def fake_load_dataset(name, split):
     if "dolly" in name:
         cats = ["open_qa", "brainstorming", "summarization", "classification"]
         return FakeDS([dict(instruction=f"q{i}", context="c" * (i % 3), response="r" * (5 + i % 7),
-                            category=cats[i % 4]) for i in range(1500)])
+                            category=cats[i % 4]) for i in range(2500)])
     return FakeDS([dict(text="news " * int(rng.integers(3, 80)), label=int(rng.integers(0, 4)))
-                   for i in range(3000 if split == "train" else 1500)])
+                   for i in range(3000 if split == "train" else 2500)])
 
 
 def test_load_tasks(tmp_path, monkeypatch):
@@ -43,7 +43,8 @@ def test_load_tasks(tmp_path, monkeypatch):
         cfg = TrainConfig(task=task, data_dir=str(tmp_path), block_size=128, agnews_train=2000)
         d = D.load_task(cfg, FakeTok())
         assert len(d["train"]) == len(d["train_groups"]) > 0
-        assert len(d["val"]) == 1000
+        assert len(d["val"]) == 1000 and len(d["test"]) == 1000
+        assert not set(map(tuple, (x for x, _ in d["val"]))) & set(map(tuple, (x for x, _ in d["test"]))) or task == "agnews"
         for ids, plen in d["train"][:50]:
             assert 0 < plen < len(ids) <= 128 and ids[-1] == 0 or len(ids) == 128
         if task == "agnews":

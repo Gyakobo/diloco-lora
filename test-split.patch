@@ -1,0 +1,276 @@
+diff --git a/aggregate.py b/aggregate.py
+index b9ac0d0..1b0d598 100644
+--- a/aggregate.py
++++ b/aggregate.py
+@@ -5,6 +5,9 @@ Summarise every finished run in results/ (no GPU needed).
+     python aggregate.py --tune          # best Nesterov outer lr per (task, split, agg) on seed 0
+     python aggregate.py --paired        # Nesterov vs plain averaging, paired by seed
+ 
++Primary metric: TEST loss at the checkpoint with the lowest validation loss (early stopping).
++Validation is used for choosing (checkpoint, outer lr); test is never used for choosing.
++
+ Communication is reported in MB per worker assuming bf16 transport (2 bytes per value).
+ """
+ import argparse
+@@ -30,7 +33,10 @@ def load(out_dir="results"):
+             r["alpha"] = None
+         if r["mode"] != "diloco":
+             r.update(k=None, H=None, outer_lr=None, outer_momentum=None, split="all")
+-        r.update(val_loss=s["final_val_loss"], val_acc=s["final_val_acc"], diverged=s["diverged"],
++        # PRIMARY metric: test loss at the best-validation checkpoint (early stopping)
++        r.update(test_loss=s.get("best_test_loss"), test_acc=s.get("best_test_acc"),
++                 final_test_loss=s.get("final_test_loss"), final_test_acc=s.get("final_test_acc"),
++                 val_loss=s["final_val_loss"], val_acc=s["final_val_acc"], diverged=s["diverged"],
+                  best_val_loss=s.get("best_val_loss"), best_step=s.get("best_step"),
+                  up_mb=s["comm_up"] * 2 / 1e6, down_mb=s["comm_down"] * 2 / 1e6,
+                  minutes=s["minutes"], name=s["name"])
+@@ -40,9 +46,9 @@ def load(out_dir="results"):
+ 
+ def summary(df):
+     g = df.groupby([k for k in KEYS], dropna=False)
+-    out = g.agg(n=("seed", "count"), loss_mean=("val_loss", "mean"), loss_std=("val_loss", "std"),
+-                acc_mean=("val_acc", "mean"), acc_std=("val_acc", "std"),
+-                best_mean=("best_val_loss", "mean"), best_step=("best_step", "mean"),
++    out = g.agg(n=("seed", "count"), test_mean=("test_loss", "mean"), test_std=("test_loss", "std"),
++                acc_mean=("test_acc", "mean"), acc_std=("test_acc", "std"),
++                final_test=("final_test_loss", "mean"), best_step=("best_step", "mean"),
+                 up_mb=("up_mb", "mean"), down_mb=("down_mb", "mean"),
+                 diverged=("diverged", "sum")).reset_index()
+     return out.sort_values(["task", "split", "agg", "outer_momentum", "outer_lr"])
+@@ -50,8 +56,8 @@ def summary(df):
+ 
+ def tune(df):
+     d = df[(df["mode"] == "diloco") & (df["seed"] == 0) & (df["outer_momentum"] > 0)]
+-    idx = d.groupby(["task", "split", "agg"])["val_loss"].idxmin()
+-    return d.loc[idx, ["task", "split", "agg", "outer_lr", "val_loss"]]
++    idx = d.groupby(["task", "split", "agg"])["best_val_loss"].idxmin()   # tuned on VALIDATION only
++    return d.loc[idx, ["task", "split", "agg", "outer_lr", "best_val_loss"]]
+ 
+ 
+ def paired(df):
+@@ -69,7 +75,7 @@ def paired(df):
+         best_lr = n.groupby("outer_lr")["seed"].count().idxmax()
+         n = n[n["outer_lr"] == best_lr]
+         m = a.merge(n, on="seed", suffixes=("_avg", "_nes"))
+-        diff = (m["val_loss_nes"] - m["val_loss_avg"]).to_numpy()
++        diff = (m["test_loss_nes"] - m["test_loss_avg"]).to_numpy()
+         if len(diff) >= 2:
+             ci = stats.t.interval(0.95, len(diff) - 1, loc=diff.mean(), scale=stats.sem(diff))
+         else:
+diff --git a/data.py b/data.py
+index 3d6bed0..ab5acbd 100644
+--- a/data.py
++++ b/data.py
+@@ -28,10 +28,14 @@ AGNEWS_TEMPLATE = ("Classify the topic of this news article as World, Sports, Bu
+ # loading + tokenizing (cached)
+ # ---------------------------------------------------------------------------
+ def load_task(cfg, tok):
+-    """Returns dict(train=[(ids, plen)], train_groups=np.array, val=[(ids, plen)],
+-                    val_labels=np.array or None, label_ids=list or None)."""
++    """Returns dict(train=[(ids, plen)], train_groups=np.array, val=[(ids, plen)], test=[...],
++                    val_labels / test_labels = np.array or None, label_ids=list or None).
++
++    val  (1000) is used for monitoring and to pick the early-stopping checkpoint.
++    test (1000) is only evaluated at the end, at the final and at the best-val checkpoint.
++    """
+     tag = cfg.model_name.replace("/", "_")
+-    path = os.path.join(cfg.data_dir, f"{cfg.task}_{tag}_b{cfg.block_size}.pt")
++    path = os.path.join(cfg.data_dir, f"{cfg.task}_{tag}_b{cfg.block_size}_v2.pt")
+     if os.path.exists(path):
+         return torch.load(path, weights_only=False)
+     if cfg.task == "dolly":
+@@ -68,11 +72,10 @@ def _dolly(cfg, tok):
+             groups.append(cats.index(ex["category"]))
+     rng = np.random.default_rng(1234)                # fixed split, independent of run seed
+     perm = rng.permutation(len(items))
+-    n_val = 1000
+-    val_idx, tr_idx = perm[:n_val], perm[n_val:]
++    val_idx, test_idx, tr_idx = perm[:1000], perm[1000:2000], perm[2000:]
+     return dict(train=[items[i] for i in tr_idx], train_groups=np.array(groups)[tr_idx],
+-                val=[items[i] for i in val_idx], val_labels=None, label_ids=None,
+-                group_names=cats)
++                val=[items[i] for i in val_idx], test=[items[i] for i in test_idx],
++                val_labels=None, test_labels=None, label_ids=None, group_names=cats)
+ 
+ 
+ def _agnews(cfg, tok):
+@@ -81,7 +84,8 @@ def _agnews(cfg, tok):
+     te = load_dataset("fancyzhx/ag_news", split="test")
+     rng = np.random.default_rng(1234)
+     tr_idx = rng.permutation(len(tr))[:cfg.agnews_train]
+-    te_idx = rng.permutation(len(te))[:1000]
++    te_perm = rng.permutation(len(te))
++    te_idx, test_idx = te_perm[:1000], te_perm[1000:2000]
+ 
+     # truncate the article so prompt + label always fit in the window
+     overhead = len(tok(AGNEWS_TEMPLATE.format(text=""), add_special_tokens=False)["input_ids"])
+@@ -99,16 +103,20 @@ def _agnews(cfg, tok):
+         if e:
+             train.append(e)
+             groups.append(ex["label"])
+-    val, labels = [], []
+-    for i in te_idx:
+-        ex = te[int(i)]
+-        e = enc(ex)
+-        if e:
+-            val.append(e)
+-            labels.append(ex["label"])
++    def held_out(indices):
++        xs, ys = [], []
++        for i in indices:
++            ex = te[int(i)]
++            e = enc(ex)
++            if e:
++                xs.append(e)
++                ys.append(ex["label"])
++        return xs, np.array(ys)
++    val, labels = held_out(te_idx)
++    test, test_labels = held_out(test_idx)
+     label_ids = [tok(l, add_special_tokens=False)["input_ids"] for l in AGNEWS_LABELS]
+-    return dict(train=train, train_groups=np.array(groups), val=val,
+-                val_labels=np.array(labels), label_ids=label_ids,
++    return dict(train=train, train_groups=np.array(groups), val=val, test=test,
++                val_labels=labels, test_labels=test_labels, label_ids=label_ids,
+                 group_names=[l.strip() for l in AGNEWS_LABELS])
+ 
+ 
+diff --git a/tests/test_correctness.py b/tests/test_correctness.py
+index 24fcab1..7a77c18 100644
+--- a/tests/test_correctness.py
++++ b/tests/test_correctness.py
+@@ -50,8 +50,9 @@ def task():
+         return [(start + i * step) % (VOCAB - 1) + 1 for i in range(n)], int(rng.integers(4, 10))
+     train = [ex() for _ in range(400)]
+     val = [ex() for _ in range(40)]
+-    return dict(train=train, train_groups=rng.integers(0, 4, len(train)), val=val,
+-                val_labels=None, label_ids=None, pad_id=0)
++    test = [ex() for _ in range(40)]
++    return dict(train=train, train_groups=rng.integers(0, 4, len(train)), val=val, test=test,
++                val_labels=None, test_labels=None, label_ids=None, pad_id=0)
+ 
+ 
+ def cfg(**kw):
+@@ -177,8 +178,9 @@ def test_classification_accuracy_runs(base_model, task):
+     t = dict(task)
+     t["label_ids"] = [[5], [6], [7, 8], [9]]
+     t["val_labels"] = np.random.default_rng(0).integers(0, 4, len(task["val"]))
++    t["test_labels"] = np.random.default_rng(1).integers(0, 4, len(task["test"]))
+     rows, s, _ = go(cfg(mode="local", agg="fedit", steps=3, eval_interval=3), base_model, t)
+-    assert 0.0 <= s["final_val_acc"] <= 1.0
++    assert 0.0 <= s["final_val_acc"] <= 1.0 and 0.0 <= s["best_test_acc"] <= 1.0
+ 
+ 
+ def test_run_names_distinguish_settings():
+@@ -194,3 +196,16 @@ def test_clash_with_different_settings_is_refused(base_model, task, tmp_path):
+     with pytest.raises(SystemExit):
+         run(cfg(mode="local", agg="fedit", steps=3, eval_interval=3, out_dir=str(tmp_path),
+                 name="x", lr=1e-4), model=copy.deepcopy(base_model), task=task, verbose=False)
++
++
++@pytest.mark.parametrize("agg", ["fedit", "merge", "full"])
++def test_best_checkpoint_is_restored(base_model, task, agg):
++    """Scoring the restored best-val checkpoint on VAL must give back the best val loss."""
++    import train as T
++    c = cfg(mode="diloco", agg=agg, k=2, H=3, steps=24, eval_examples=40,
++            inner_state="reset" if agg == "merge" else "keep")
++    t = dict(task)
++    t["test"] = task["val"]            # so the 'test' score of the checkpoint is its val score
++    rows, s, _ = go(c, base_model, t)
++    assert abs(s["best_test_loss"] - s["best_val_loss"]) < 1e-4
++    assert s["best_val_loss"] == min(r["val_loss"] for r in rows)
+diff --git a/tests/test_data.py b/tests/test_data.py
+index fa726f8..462398c 100644
+--- a/tests/test_data.py
++++ b/tests/test_data.py
+@@ -32,9 +32,9 @@ def fake_load_dataset(name, split):
+     if "dolly" in name:
+         cats = ["open_qa", "brainstorming", "summarization", "classification"]
+         return FakeDS([dict(instruction=f"q{i}", context="c" * (i % 3), response="r" * (5 + i % 7),
+-                            category=cats[i % 4]) for i in range(1500)])
++                            category=cats[i % 4]) for i in range(2500)])
+     return FakeDS([dict(text="news " * int(rng.integers(3, 80)), label=int(rng.integers(0, 4)))
+-                   for i in range(3000 if split == "train" else 1500)])
++                   for i in range(3000 if split == "train" else 2500)])
+ 
+ 
+ def test_load_tasks(tmp_path, monkeypatch):
+@@ -43,7 +43,8 @@ def test_load_tasks(tmp_path, monkeypatch):
+         cfg = TrainConfig(task=task, data_dir=str(tmp_path), block_size=128, agnews_train=2000)
+         d = D.load_task(cfg, FakeTok())
+         assert len(d["train"]) == len(d["train_groups"]) > 0
+-        assert len(d["val"]) == 1000
++        assert len(d["val"]) == 1000 and len(d["test"]) == 1000
++        assert not set(map(tuple, (x for x, _ in d["val"]))) & set(map(tuple, (x for x, _ in d["test"]))) or task == "agnews"
+         for ids, plen in d["train"][:50]:
+             assert 0 < plen < len(ids) <= 128 and ids[-1] == 0 or len(ids) == 128
+         if task == "agnews":
+diff --git a/train.py b/train.py
+index 177becc..de0a281 100644
+--- a/train.py
++++ b/train.py
+@@ -460,6 +460,12 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
+         return None
+     model, task, pad_id, layers, trainable = setup(cfg, model, task)
+     rows, t0 = [], time.time()
++    # tensors that can change during training; a CPU copy is kept at the best validation loss
++    if cfg.agg == "full":
++        mutable = dict(model.named_parameters())
++    else:
++        mutable = {f"{n}.{k}": getattr(m, k) for n, m in layers for k in ("weight", "lora_A", "lora_B")}
++    best = dict(loss=float("inf"), step=None, state=None)
+     if cfg.device.startswith("cuda"):
+         torch.cuda.reset_peak_memory_stats()
+     workers = cfg.k if cfg.mode == "diloco" else 1
+@@ -473,6 +479,9 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
+                    comm_up=stats.get("comm_up", 0), comm_down=stats.get("comm_down", 0),
+                    lr=lr_at(max(step - 1, 0), cfg), elapsed_s=round(time.time() - t0, 1))
+         rows.append(row)
++        if math.isfinite(vl) and vl < best["loss"]:
++            best.update(loss=vl, step=step,
++                        state={k: t.detach().to("cpu", copy=True) for k, t in mutable.items()})
+         if verbose:
+             tl = f"{train_loss:.4f}" if train_loss is not None else "  -   "
+             a = f" | acc {acc:.3f}" if acc is not None else ""
+@@ -492,14 +501,23 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
+     else:
+         raise ValueError(cfg.mode)
+ 
+-    # final evaluation on the FULL validation set
+-    final_loss, final_acc = evaluate(model, task["val"], cfg, pad_id, task.get("label_ids"),
+-                                     task.get("val_labels"))
++    # final model: FULL validation set and the held-out test set
++    lab = task.get("label_ids")
++    final_loss, final_acc = evaluate(model, task["val"], cfg, pad_id, lab, task.get("val_labels"))
++    final_test, final_test_acc = evaluate(model, task["test"], cfg, pad_id, lab, task.get("test_labels"))
++    # early stopping: the checkpoint with the lowest periodic validation loss, scored on TEST
++    if best["state"] is not None:
++        with torch.no_grad():
++            for k, t in mutable.items():
++                t.copy_(best["state"][k].to(t.device))
++        best_test, best_test_acc = evaluate(model, task["test"], cfg, pad_id, lab, task.get("test_labels"))
++    else:
++        best_test, best_test_acc = float("nan"), None
+     last = rows[-1]
+-    # best periodic validation loss (500-example subset) and where it happened: shows over-fitting
+-    best = min(rows, key=lambda r: r["val_loss"] if math.isfinite(r["val_loss"]) else float("inf"))
+     summary = dict(config=asdict(cfg), name=name, final_val_loss=final_loss, final_val_acc=final_acc,
+-                   best_val_loss=best["val_loss"], best_step=best["step"],
++                   final_test_loss=final_test, final_test_acc=final_test_acc,
++                   best_val_loss=best["loss"], best_step=best["step"],
++                   best_test_loss=best_test, best_test_acc=best_test_acc,
+                    diverged=not math.isfinite(final_loss), steps_done=last["step"],
+                    comm_rounds=last["comm_rounds"], comm_up=last["comm_up"], comm_down=last["comm_down"],
+                    trainable_params=sum(p.numel() for p in trainable),
+@@ -507,8 +525,10 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
+                    peak_mem_gb=(round(torch.cuda.max_memory_allocated() / 1e9, 2)
+                                 if cfg.device.startswith("cuda") else None))
+     if verbose:
+-        print(f"done: final val loss {final_loss:.4f}"
+-              f"{f' | acc {final_acc:.4f}' if final_acc is not None else ''} | {summary['minutes']} min")
++        print(f"done: final val {final_loss:.4f} | final test {final_test:.4f} | "
++              f"best-val checkpoint (step {best['step']}) test {best_test:.4f}"
++              f"{f' | test acc {best_test_acc:.4f}' if best_test_acc is not None else ''}"
++              f" | {summary['minutes']} min")
+     if write:
+         os.makedirs(cfg.out_dir, exist_ok=True)
+         with open(os.path.join(cfg.out_dir, name + ".csv"), "w", newline="") as f:

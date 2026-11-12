@@ -50,8 +50,9 @@ def task():
         return [(start + i * step) % (VOCAB - 1) + 1 for i in range(n)], int(rng.integers(4, 10))
     train = [ex() for _ in range(400)]
     val = [ex() for _ in range(40)]
-    return dict(train=train, train_groups=rng.integers(0, 4, len(train)), val=val,
-                val_labels=None, label_ids=None, pad_id=0)
+    test = [ex() for _ in range(40)]
+    return dict(train=train, train_groups=rng.integers(0, 4, len(train)), val=val, test=test,
+                val_labels=None, test_labels=None, label_ids=None, pad_id=0)
 
 
 def cfg(**kw):
@@ -177,8 +178,9 @@ def test_classification_accuracy_runs(base_model, task):
     t = dict(task)
     t["label_ids"] = [[5], [6], [7, 8], [9]]
     t["val_labels"] = np.random.default_rng(0).integers(0, 4, len(task["val"]))
+    t["test_labels"] = np.random.default_rng(1).integers(0, 4, len(task["test"]))
     rows, s, _ = go(cfg(mode="local", agg="fedit", steps=3, eval_interval=3), base_model, t)
-    assert 0.0 <= s["final_val_acc"] <= 1.0
+    assert 0.0 <= s["final_val_acc"] <= 1.0 and 0.0 <= s["best_test_acc"] <= 1.0
 
 
 def test_run_names_distinguish_settings():
@@ -194,3 +196,16 @@ def test_clash_with_different_settings_is_refused(base_model, task, tmp_path):
     with pytest.raises(SystemExit):
         run(cfg(mode="local", agg="fedit", steps=3, eval_interval=3, out_dir=str(tmp_path),
                 name="x", lr=1e-4), model=copy.deepcopy(base_model), task=task, verbose=False)
+
+
+@pytest.mark.parametrize("agg", ["fedit", "merge", "full"])
+def test_best_checkpoint_is_restored(base_model, task, agg):
+    """Scoring the restored best-val checkpoint on VAL must give back the best val loss."""
+    import train as T
+    c = cfg(mode="diloco", agg=agg, k=2, H=3, steps=24, eval_examples=40,
+            inner_state="reset" if agg == "merge" else "keep")
+    t = dict(task)
+    t["test"] = task["val"]            # so the 'test' score of the checkpoint is its val score
+    rows, s, _ = go(c, base_model, t)
+    assert abs(s["best_test_loss"] - s["best_val_loss"]) < 1e-4
+    assert s["best_val_loss"] == min(r["val_loss"] for r in rows)
