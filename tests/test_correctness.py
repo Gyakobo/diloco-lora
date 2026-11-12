@@ -179,3 +179,18 @@ def test_classification_accuracy_runs(base_model, task):
     t["val_labels"] = np.random.default_rng(0).integers(0, 4, len(task["val"]))
     rows, s, _ = go(cfg(mode="local", agg="fedit", steps=3, eval_interval=3), base_model, t)
     assert 0.0 <= s["final_val_acc"] <= 1.0
+
+
+def test_run_names_distinguish_settings():
+    a = TrainConfig(mode="diloco", batch_size=4).run_name()
+    b = TrainConfig(mode="diloco", batch_size=8).run_name()
+    assert a != b
+
+
+def test_clash_with_different_settings_is_refused(base_model, task, tmp_path):
+    c = cfg(mode="local", agg="fedit", steps=3, eval_interval=3, out_dir=str(tmp_path), name="x")
+    run(c, model=copy.deepcopy(base_model), task=task, verbose=False)
+    assert run(c, model=copy.deepcopy(base_model), task=task, verbose=False) is None   # skip
+    with pytest.raises(SystemExit):
+        run(cfg(mode="local", agg="fedit", steps=3, eval_interval=3, out_dir=str(tmp_path),
+                name="x", lr=1e-4), model=copy.deepcopy(base_model), task=task, verbose=False)

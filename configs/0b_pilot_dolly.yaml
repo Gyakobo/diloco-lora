@@ -2,6 +2,7 @@
 # (~2.3 epochs; val loss bottomed at step ~650 then rose). Check that batch 4 per worker
 # (~1.15 epochs, same 1000 steps and 20 rounds) removes it, for sync and DiLoCo.
 base:
+  out_dir: results/pilot
   task: dolly
   block_size: 512
   agg: fedit

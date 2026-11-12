@@ -1,0 +1,78 @@
+diff --git a/configs/0_pilot.yaml b/configs/0_pilot.yaml
+index be647d9..a0b9aaa 100644
+--- a/configs/0_pilot.yaml
++++ b/configs/0_pilot.yaml
+@@ -2,6 +2,7 @@
+ # check for over-fitting (val loss should still fall or plateau at the last eval, not rise),
+ # and time one DiLoCo run per task to update SEC_PER_WORKER_STEP in sweep.py.
+ base:
++  out_dir: results/pilot
+   agg: fedit
+   rank: 16
+   lora_alpha: 32
+diff --git a/configs/0b_pilot_dolly.yaml b/configs/0b_pilot_dolly.yaml
+index c260aa4..3f6614f 100644
+--- a/configs/0b_pilot_dolly.yaml
++++ b/configs/0b_pilot_dolly.yaml
+@@ -2,6 +2,7 @@
+ # (~2.3 epochs; val loss bottomed at step ~650 then rose). Check that batch 4 per worker
+ # (~1.15 epochs, same 1000 steps and 20 rounds) removes it, for sync and DiLoCo.
+ base:
++  out_dir: results/pilot
+   task: dolly
+   block_size: 512
+   agg: fedit
+diff --git a/tests/test_correctness.py b/tests/test_correctness.py
+index 1e8bd35..24fcab1 100644
+--- a/tests/test_correctness.py
++++ b/tests/test_correctness.py
+@@ -179,3 +179,18 @@ def test_classification_accuracy_runs(base_model, task):
+     t["val_labels"] = np.random.default_rng(0).integers(0, 4, len(task["val"]))
+     rows, s, _ = go(cfg(mode="local", agg="fedit", steps=3, eval_interval=3), base_model, t)
+     assert 0.0 <= s["final_val_acc"] <= 1.0
++
++
++def test_run_names_distinguish_settings():
++    a = TrainConfig(mode="diloco", batch_size=4).run_name()
++    b = TrainConfig(mode="diloco", batch_size=8).run_name()
++    assert a != b
++
++
++def test_clash_with_different_settings_is_refused(base_model, task, tmp_path):
++    c = cfg(mode="local", agg="fedit", steps=3, eval_interval=3, out_dir=str(tmp_path), name="x")
++    run(c, model=copy.deepcopy(base_model), task=task, verbose=False)
++    assert run(c, model=copy.deepcopy(base_model), task=task, verbose=False) is None   # skip
++    with pytest.raises(SystemExit):
++        run(cfg(mode="local", agg="fedit", steps=3, eval_interval=3, out_dir=str(tmp_path),
++                name="x", lr=1e-4), model=copy.deepcopy(base_model), task=task, verbose=False)
+diff --git a/train.py b/train.py
+index 0918dba..177becc 100644
+--- a/train.py
++++ b/train.py
+@@ -106,7 +106,8 @@ class TrainConfig:
+                  f"{f'_dr{self.down_rank}' if self.down_rank else ''}")
+         else:
+             n = f"{self.task}_{m}_{ag}_{self.mode}_bs{self.batch_size}_{sp}"
+-        return f"{n}_lr{self.lr}_steps{self.steps}_s{self.seed}"
++            return f"{n}_lr{self.lr}_steps{self.steps}_s{self.seed}"
++        return f"{n}_bs{self.batch_size}_lr{self.lr}_steps{self.steps}_s{self.seed}"
+ 
+ 
+ # ---------------------------------------------------------------------------
+@@ -445,6 +446,16 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
+     name = cfg.run_name()
+     json_path = os.path.join(cfg.out_dir, name + ".json")
+     if write and os.path.exists(json_path) and not cfg.force:
++        # only skip if the finished run really used the SAME settings (a name clash must not
++        # silently reuse a different experiment)
++        with open(json_path) as f:
++            done = json.load(f)["config"]
++        ignore = {"device", "data_dir", "out_dir", "force", "name"}
++        diff = {k: (done.get(k), v) for k, v in asdict(cfg).items()
++                if k not in ignore and done.get(k) != v}
++        if diff:
++            raise SystemExit(f"[clash] {name} exists with different settings {diff}; "
++                             f"use --name or move the old result")
+         print(f"[skip] {name} already done")
+         return None
+     model, task, pad_id, layers, trainable = setup(cfg, model, task)

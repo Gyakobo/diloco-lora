@@ -2,6 +2,7 @@
 # check for over-fitting (val loss should still fall or plateau at the last eval, not rise),
 # and time one DiLoCo run per task to update SEC_PER_WORKER_STEP in sweep.py.
 base:
+  out_dir: results/pilot
   agg: fedit
   rank: 16
   lora_alpha: 32

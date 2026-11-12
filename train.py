@@ -106,7 +106,8 @@ class TrainConfig:
                  f"{f'_dr{self.down_rank}' if self.down_rank else ''}")
         else:
             n = f"{self.task}_{m}_{ag}_{self.mode}_bs{self.batch_size}_{sp}"
-        return f"{n}_lr{self.lr}_steps{self.steps}_s{self.seed}"
+            return f"{n}_lr{self.lr}_steps{self.steps}_s{self.seed}"
+        return f"{n}_bs{self.batch_size}_lr{self.lr}_steps{self.steps}_s{self.seed}"
 
 
 # ---------------------------------------------------------------------------
@@ -445,6 +446,16 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
     name = cfg.run_name()
     json_path = os.path.join(cfg.out_dir, name + ".json")
     if write and os.path.exists(json_path) and not cfg.force:
+        # only skip if the finished run really used the SAME settings (a name clash must not
+        # silently reuse a different experiment)
+        with open(json_path) as f:
+            done = json.load(f)["config"]
+        ignore = {"device", "data_dir", "out_dir", "force", "name"}
+        diff = {k: (done.get(k), v) for k, v in asdict(cfg).items()
+                if k not in ignore and done.get(k) != v}
+        if diff:
+            raise SystemExit(f"[clash] {name} exists with different settings {diff}; "
+                             f"use --name or move the old result")
         print(f"[skip] {name} already done")
         return None
     model, task, pad_id, layers, trainable = setup(cfg, model, task)
