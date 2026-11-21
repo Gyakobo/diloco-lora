@@ -209,3 +209,12 @@ def test_best_checkpoint_is_restored(base_model, task, agg):
     rows, s, _ = go(c, base_model, t)
     assert abs(s["best_test_loss"] - s["best_val_loss"]) < 1e-4
     assert s["best_val_loss"] == min(r["val_loss"] for r in rows)
+
+
+def test_dirichlet_split_has_no_tiny_workers():
+    """alpha = 0.1 often gives a worker (almost) nothing; the split must re-draw until it doesn't."""
+    for s in range(30):
+        groups = np.random.default_rng(s).integers(0, 4, 4000)
+        parts = partition(groups, 4, "dirichlet", alpha=0.1, seed=0)
+        assert min(len(p) for p in parts) >= 100          # 10% of an equal share (1000)
+        assert sorted(np.concatenate(parts).tolist()) == list(range(4000))

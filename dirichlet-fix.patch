@@ -1,0 +1,94 @@
+diff --git a/data.py b/data.py
+index ab5acbd..5917293 100644
+--- a/data.py
++++ b/data.py
+@@ -123,13 +123,15 @@ def _agnews(cfg, tok):
+ # ---------------------------------------------------------------------------
+ # partitions
+ # ---------------------------------------------------------------------------
+-def partition(groups, k, mode, alpha=0.5, seed=0):
++def partition(groups, k, mode, alpha=0.5, seed=0, min_frac=0.1):
+     """Split example indices over k workers.
+ 
+     iid        random equal split
+     group      whole groups (categories / labels) per worker, balanced by example count;
+                with k >= number of groups some groups are split evenly
+-    dirichlet  for every group, the share of each worker ~ Dirichlet(alpha) (Hsu et al., 2019)
++    dirichlet  for every group, the share of each worker ~ Dirichlet(alpha) (Hsu et al., 2019);
++               re-drawn until every worker holds at least min_frac of an equal share
++               (n / k), the usual guard against empty or near-empty workers
+     The split is fixed by `seed` (we use a constant, so all methods see the same split).
+     """
+     rng = np.random.default_rng(seed)
+@@ -154,14 +156,18 @@ def partition(groups, k, mode, alpha=0.5, seed=0):
+                     parts[w].extend(chunk)
+         return [np.sort(np.array(p, dtype=np.int64)) for p in parts]
+     if mode == "dirichlet":
+-        parts = [[] for _ in range(k)]
+-        for g in ids:
+-            idx = rng.permutation(np.flatnonzero(groups == g))
+-            props = rng.dirichlet(alpha * np.ones(k))
+-            cuts = (np.cumsum(props)[:-1] * len(idx)).astype(int)
+-            for w, chunk in enumerate(np.split(idx, cuts)):
+-                parts[w].extend(chunk)
+-        return [np.sort(np.array(p, dtype=np.int64)) for p in parts]
++        min_size = int(min_frac * n / k)
++        for _ in range(10_000):
++            parts = [[] for _ in range(k)]
++            for g in ids:
++                idx = rng.permutation(np.flatnonzero(groups == g))
++                props = rng.dirichlet(alpha * np.ones(k))
++                cuts = (np.cumsum(props)[:-1] * len(idx)).astype(int)
++                for w, chunk in enumerate(np.split(idx, cuts)):
++                    parts[w].extend(chunk)
++            if min(len(p) for p in parts) >= min_size:
++                return [np.sort(np.array(p, dtype=np.int64)) for p in parts]
++        raise RuntimeError(f"no Dirichlet({alpha}) split with every worker >= {min_size} examples")
+     raise ValueError(mode)
+ 
+ 
+@@ -185,6 +191,8 @@ class Sampler:
+     """Random batches (with replacement across epochs) from one worker's examples."""
+ 
+     def __init__(self, examples, idx, batch_size, seed):
++        if len(idx) == 0:
++            raise ValueError("a worker received no training examples")
+         self.examples, self.idx, self.B = examples, np.asarray(idx), batch_size
+         self.rng = random.Random(seed)
+         self.order, self.pos = [], 0
+diff --git a/tests/test_correctness.py b/tests/test_correctness.py
+index 7a77c18..d3cce02 100644
+--- a/tests/test_correctness.py
++++ b/tests/test_correctness.py
+@@ -209,3 +209,12 @@ def test_best_checkpoint_is_restored(base_model, task, agg):
+     rows, s, _ = go(c, base_model, t)
+     assert abs(s["best_test_loss"] - s["best_val_loss"]) < 1e-4
+     assert s["best_val_loss"] == min(r["val_loss"] for r in rows)
++
++
++def test_dirichlet_split_has_no_tiny_workers():
++    """alpha = 0.1 often gives a worker (almost) nothing; the split must re-draw until it doesn't."""
++    for s in range(30):
++        groups = np.random.default_rng(s).integers(0, 4, 4000)
++        parts = partition(groups, 4, "dirichlet", alpha=0.1, seed=0)
++        assert min(len(p) for p in parts) >= 100          # 10% of an equal share (1000)
++        assert sorted(np.concatenate(parts).tolist()) == list(range(4000))
+diff --git a/train.py b/train.py
+index de0a281..8c44156 100644
+--- a/train.py
++++ b/train.py
+@@ -514,7 +514,13 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
+     else:
+         best_test, best_test_acc = float("nan"), None
+     last = rows[-1]
+-    summary = dict(config=asdict(cfg), name=name, final_val_loss=final_loss, final_val_acc=final_acc,
++    # examples per worker per group (category / label): documents how non-i.i.d. the split was
++    split_counts = None
++    if cfg.mode == "diloco":
++        g = task["train_groups"]
++        parts = partition(g, cfg.k, cfg.split, cfg.alpha, cfg.split_seed)
++        split_counts = [np.bincount(g[p], minlength=int(g.max()) + 1).tolist() for p in parts]
++    summary = dict(config=asdict(cfg), name=name, split_counts=split_counts, final_val_loss=final_loss, final_val_acc=final_acc,
+                    final_test_loss=final_test, final_test_acc=final_test_acc,
+                    best_val_loss=best["loss"], best_step=best["step"],
+                    best_test_loss=best_test, best_test_acc=best_test_acc,

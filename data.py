@@ -123,13 +123,15 @@ def _agnews(cfg, tok):
 # ---------------------------------------------------------------------------
 # partitions
 # ---------------------------------------------------------------------------
-def partition(groups, k, mode, alpha=0.5, seed=0):
+def partition(groups, k, mode, alpha=0.5, seed=0, min_frac=0.1):
     """Split example indices over k workers.
 
     iid        random equal split
     group      whole groups (categories / labels) per worker, balanced by example count;
                with k >= number of groups some groups are split evenly
-    dirichlet  for every group, the share of each worker ~ Dirichlet(alpha) (Hsu et al., 2019)
+    dirichlet  for every group, the share of each worker ~ Dirichlet(alpha) (Hsu et al., 2019);
+               re-drawn until every worker holds at least min_frac of an equal share
+               (n / k), the usual guard against empty or near-empty workers
     The split is fixed by `seed` (we use a constant, so all methods see the same split).
     """
     rng = np.random.default_rng(seed)
@@ -154,14 +156,18 @@ def partition(groups, k, mode, alpha=0.5, seed=0):
                     parts[w].extend(chunk)
         return [np.sort(np.array(p, dtype=np.int64)) for p in parts]
     if mode == "dirichlet":
-        parts = [[] for _ in range(k)]
-        for g in ids:
-            idx = rng.permutation(np.flatnonzero(groups == g))
-            props = rng.dirichlet(alpha * np.ones(k))
-            cuts = (np.cumsum(props)[:-1] * len(idx)).astype(int)
-            for w, chunk in enumerate(np.split(idx, cuts)):
-                parts[w].extend(chunk)
-        return [np.sort(np.array(p, dtype=np.int64)) for p in parts]
+        min_size = int(min_frac * n / k)
+        for _ in range(10_000):
+            parts = [[] for _ in range(k)]
+            for g in ids:
+                idx = rng.permutation(np.flatnonzero(groups == g))
+                props = rng.dirichlet(alpha * np.ones(k))
+                cuts = (np.cumsum(props)[:-1] * len(idx)).astype(int)
+                for w, chunk in enumerate(np.split(idx, cuts)):
+                    parts[w].extend(chunk)
+            if min(len(p) for p in parts) >= min_size:
+                return [np.sort(np.array(p, dtype=np.int64)) for p in parts]
+        raise RuntimeError(f"no Dirichlet({alpha}) split with every worker >= {min_size} examples")
     raise ValueError(mode)
 
 
@@ -185,6 +191,8 @@ class Sampler:
     """Random batches (with replacement across epochs) from one worker's examples."""
 
     def __init__(self, examples, idx, batch_size, seed):
+        if len(idx) == 0:
+            raise ValueError("a worker received no training examples")
         self.examples, self.idx, self.B = examples, np.asarray(idx), batch_size
         self.rng = random.Random(seed)
         self.order, self.pos = [], 0

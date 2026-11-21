@@ -514,7 +514,13 @@ def run(cfg, model=None, task=None, write=True, verbose=True):
     else:
         best_test, best_test_acc = float("nan"), None
     last = rows[-1]
-    summary = dict(config=asdict(cfg), name=name, final_val_loss=final_loss, final_val_acc=final_acc,
+    # examples per worker per group (category / label): documents how non-i.i.d. the split was
+    split_counts = None
+    if cfg.mode == "diloco":
+        g = task["train_groups"]
+        parts = partition(g, cfg.k, cfg.split, cfg.alpha, cfg.split_seed)
+        split_counts = [np.bincount(g[p], minlength=int(g.max()) + 1).tolist() for p in parts]
+    summary = dict(config=asdict(cfg), name=name, split_counts=split_counts, final_val_loss=final_loss, final_val_acc=final_acc,
                    final_test_loss=final_test, final_test_acc=final_test_acc,
                    best_val_loss=best["loss"], best_step=best["step"],
                    best_test_loss=best_test, best_test_acc=best_test_acc,
