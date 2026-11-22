@@ -676,3 +676,443 @@ run: agnews_gpt2_ffa_r16_k4_H50_olr0.7_m0.9_nest_dir1.0_bs16_lr0.001_steps1000_s
 trainable: 1.33M | device cuda | dtype bf16
 step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
 step   100 | rounds    2 | train 0.6633 | val 0.1207 | acc 0.896 |   0.9 min
+step   200 | rounds    4 | train 0.1109 | val 0.1082 | acc 0.920 |   1.8 min
+step   300 | rounds    6 | train 0.0960 | val 0.0719 | acc 0.944 |   2.6 min
+step   400 | rounds    8 | train 0.0768 | val 0.0650 | acc 0.948 |   3.4 min
+step   500 | rounds   10 | train 0.0753 | val 0.0618 | acc 0.950 |   4.2 min
+step   600 | rounds   12 | train 0.0677 | val 0.0600 | acc 0.946 |   5.0 min
+step   700 | rounds   14 | train 0.0645 | val 0.0574 | acc 0.952 |   5.9 min
+step   800 | rounds   16 | train 0.0625 | val 0.0586 | acc 0.948 |   6.7 min
+step   900 | rounds   18 | train 0.0580 | val 0.0583 | acc 0.954 |   7.5 min
+step  1000 | rounds   20 | train 0.0526 | val 0.0573 | acc 0.952 |   8.3 min
+done: final val 0.0773 | final test 0.0887 | best-val checkpoint (step 1000) test 0.0887 | test acc 0.9230 | 8.99 min
+
+===== [25/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'alpha': 0.05, 'seed': 0}  (sweep time so far 3.6 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3558.28it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr1.0_m0.0_dir0.05_reset_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.4871 | val 0.6255 | acc 0.636 |   1.0 min
+step   200 | rounds    4 | train 0.1266 | val 0.8820 | acc 0.592 |   2.0 min
+step   300 | rounds    6 | train 0.1078 | val 0.5388 | acc 0.694 |   2.9 min
+step   400 | rounds    8 | train 0.1225 | val 0.4726 | acc 0.720 |   3.8 min
+step   500 | rounds   10 | train 0.0887 | val 0.1412 | acc 0.908 |   4.8 min
+step   600 | rounds   12 | train 0.0457 | val 0.4372 | acc 0.674 |   5.7 min
+step   700 | rounds   14 | train 0.0545 | val 0.1542 | acc 0.900 |   6.6 min
+step   800 | rounds   16 | train 0.0448 | val 0.2122 | acc 0.850 |   7.6 min
+step   900 | rounds   18 | train 0.0477 | val 0.1418 | acc 0.896 |   8.5 min
+step  1000 | rounds   20 | train 0.0494 | val 0.1395 | acc 0.896 |   9.4 min
+done: final val 0.1614 | final test 0.1672 | best-val checkpoint (step 1000) test 0.1672 | test acc 0.8650 | 10.08 min
+
+===== [26/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'alpha': 0.05, 'seed': 1}  (sweep time so far 3.8 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3650.31it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr1.0_m0.0_dir0.05_reset_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.4703 | val 0.2815 | acc 0.844 |   1.0 min
+step   200 | rounds    4 | train 0.1028 | val 0.3012 | acc 0.714 |   1.8 min
+step   300 | rounds    6 | train 0.1012 | val 0.8444 | acc 0.672 |   2.6 min
+step   400 | rounds    8 | train 0.1049 | val 0.2715 | acc 0.814 |   3.5 min
+step   500 | rounds   10 | train 0.0517 | val 0.4583 | acc 0.658 |   4.3 min
+step   600 | rounds   12 | train 0.0501 | val 0.3607 | acc 0.736 |   5.1 min
+step   700 | rounds   14 | train 0.0422 | val 0.3667 | acc 0.730 |   5.9 min
+step   800 | rounds   16 | train 0.0490 | val 0.2037 | acc 0.856 |   6.7 min
+step   900 | rounds   18 | train 0.0480 | val 0.1354 | acc 0.900 |   7.6 min
+step  1000 | rounds   20 | train 0.0448 | val 0.1367 | acc 0.904 |   8.4 min
+done: final val 0.1580 | final test 0.1663 | best-val checkpoint (step 900) test 0.1626 | test acc 0.8770 | 8.97 min
+
+===== [27/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'alpha': 0.3, 'seed': 0}  (sweep time so far 4.0 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3540.20it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr1.0_m0.0_dir0.3_reset_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5522 | val 0.1910 | acc 0.860 |   0.9 min
+step   200 | rounds    4 | train 0.0898 | val 0.1210 | acc 0.912 |   1.8 min
+step   300 | rounds    6 | train 0.0832 | val 0.1246 | acc 0.910 |   2.6 min
+step   400 | rounds    8 | train 0.0727 | val 0.1473 | acc 0.890 |   3.5 min
+step   500 | rounds   10 | train 0.0706 | val 0.1154 | acc 0.910 |   4.3 min
+step   600 | rounds   12 | train 0.0624 | val 0.0994 | acc 0.918 |   5.2 min
+step   700 | rounds   14 | train 0.0554 | val 0.0919 | acc 0.930 |   6.0 min
+step   800 | rounds   16 | train 0.0589 | val 0.0856 | acc 0.926 |   6.9 min
+step   900 | rounds   18 | train 0.0526 | val 0.0991 | acc 0.916 |   7.7 min
+step  1000 | rounds   20 | train 0.0516 | val 0.0798 | acc 0.930 |   8.5 min
+done: final val 0.1028 | final test 0.1145 | best-val checkpoint (step 1000) test 0.1145 | test acc 0.9050 | 9.23 min
+
+===== [28/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'alpha': 0.3, 'seed': 1}  (sweep time so far 4.1 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3601.79it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr1.0_m0.0_dir0.3_reset_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5172 | val 0.1830 | acc 0.866 |   0.9 min
+step   200 | rounds    4 | train 0.0971 | val 0.1458 | acc 0.890 |   1.7 min
+step   300 | rounds    6 | train 0.0877 | val 0.1450 | acc 0.902 |   2.5 min
+step   400 | rounds    8 | train 0.0783 | val 0.1149 | acc 0.912 |   3.3 min
+step   500 | rounds   10 | train 0.0656 | val 0.0933 | acc 0.924 |   4.0 min
+step   600 | rounds   12 | train 0.0613 | val 0.0871 | acc 0.928 |   4.8 min
+step   700 | rounds   14 | train 0.0604 | val 0.1003 | acc 0.914 |   5.6 min
+step   800 | rounds   16 | train 0.0578 | val 0.0819 | acc 0.922 |   6.4 min
+step   900 | rounds   18 | train 0.0559 | val 0.0768 | acc 0.934 |   7.2 min
+step  1000 | rounds   20 | train 0.0479 | val 0.0827 | acc 0.924 |   8.0 min
+done: final val 0.1110 | final test 0.1263 | best-val checkpoint (step 900) test 0.1181 | test acc 0.9090 | 8.67 min
+
+===== [29/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'alpha': 1.0, 'seed': 0}  (sweep time so far 4.3 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3658.42it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr1.0_m0.0_dir1.0_reset_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5852 | val 0.1290 | acc 0.904 |   1.0 min
+step   200 | rounds    4 | train 0.1176 | val 0.1025 | acc 0.912 |   1.8 min
+step   300 | rounds    6 | train 0.1088 | val 0.0916 | acc 0.922 |   2.6 min
+step   400 | rounds    8 | train 0.0937 | val 0.0708 | acc 0.940 |   3.4 min
+step   500 | rounds   10 | train 0.0862 | val 0.0683 | acc 0.942 |   4.3 min
+step   600 | rounds   12 | train 0.0796 | val 0.0641 | acc 0.948 |   5.1 min
+step   700 | rounds   14 | train 0.0787 | val 0.0618 | acc 0.950 |   6.0 min
+step   800 | rounds   16 | train 0.0640 | val 0.0585 | acc 0.952 |   6.8 min
+step   900 | rounds   18 | train 0.0663 | val 0.0602 | acc 0.948 |   7.7 min
+step  1000 | rounds   20 | train 0.0649 | val 0.0566 | acc 0.950 |   8.5 min
+done: final val 0.0794 | final test 0.1029 | best-val checkpoint (step 1000) test 0.1029 | test acc 0.9080 | 9.22 min
+
+===== [30/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'alpha': 1.0, 'seed': 1}  (sweep time so far 4.4 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3542.12it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr1.0_m0.0_dir1.0_reset_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5866 | val 0.1280 | acc 0.888 |   1.0 min
+step   200 | rounds    4 | train 0.1259 | val 0.0990 | acc 0.918 |   1.9 min
+step   300 | rounds    6 | train 0.1072 | val 0.0883 | acc 0.924 |   2.8 min
+step   400 | rounds    8 | train 0.0915 | val 0.0763 | acc 0.930 |   3.6 min
+step   500 | rounds   10 | train 0.0889 | val 0.0725 | acc 0.948 |   4.5 min
+step   600 | rounds   12 | train 0.0790 | val 0.0666 | acc 0.948 |   5.3 min
+step   700 | rounds   14 | train 0.0729 | val 0.0632 | acc 0.948 |   6.3 min
+step   800 | rounds   16 | train 0.0724 | val 0.0633 | acc 0.944 |   7.1 min
+step   900 | rounds   18 | train 0.0654 | val 0.0635 | acc 0.954 |   8.0 min
+step  1000 | rounds   20 | train 0.0627 | val 0.0628 | acc 0.952 |   8.8 min
+done: final val 0.0912 | final test 0.1082 | best-val checkpoint (step 1000) test 0.1082 | test acc 0.9100 | 9.53 min
+
+===== [31/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'alpha': 0.05, 'seed': 0}  (sweep time so far 4.6 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3597.26it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.05_reset_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.4745 | val 0.4127 | acc 0.658 |   1.0 min
+step   200 | rounds    4 | train 0.1061 | val 0.8223 | acc 0.510 |   1.9 min
+step   300 | rounds    6 | train 0.0741 | val 0.1796 | acc 0.886 |   2.8 min
+step   400 | rounds    8 | train 0.1080 | val 0.3515 | acc 0.698 |   3.8 min
+step   500 | rounds   10 | train 0.0568 | val 0.2238 | acc 0.834 |   4.7 min
+step   600 | rounds   12 | train 0.0435 | val 0.2678 | acc 0.804 |   5.6 min
+step   700 | rounds   14 | train 0.0549 | val 0.1525 | acc 0.894 |   6.5 min
+step   800 | rounds   16 | train 0.0462 | val 0.1799 | acc 0.870 |   7.4 min
+step   900 | rounds   18 | train 0.0543 | val 0.1711 | acc 0.872 |   8.3 min
+step  1000 | rounds   20 | train 0.0560 | val 0.1258 | acc 0.910 |   9.2 min
+done: final val 0.1453 | final test 0.1559 | best-val checkpoint (step 1000) test 0.1559 | test acc 0.8770 | 9.86 min
+
+===== [32/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'alpha': 0.05, 'seed': 1}  (sweep time so far 4.7 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3801.65it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.05_reset_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.4685 | val 0.3211 | acc 0.778 |   0.9 min
+step   200 | rounds    4 | train 0.0966 | val 0.2945 | acc 0.714 |   1.7 min
+step   300 | rounds    6 | train 0.0917 | val 0.4351 | acc 0.688 |   2.6 min
+step   400 | rounds    8 | train 0.0842 | val 0.1991 | acc 0.880 |   3.4 min
+step   500 | rounds   10 | train 0.0478 | val 0.5572 | acc 0.580 |   4.2 min
+step   600 | rounds   12 | train 0.0567 | val 0.2018 | acc 0.844 |   5.0 min
+step   700 | rounds   14 | train 0.0405 | val 0.1970 | acc 0.840 |   5.8 min
+step   800 | rounds   16 | train 0.0490 | val 0.2003 | acc 0.838 |   6.6 min
+step   900 | rounds   18 | train 0.0523 | val 0.1430 | acc 0.882 |   7.5 min
+step  1000 | rounds   20 | train 0.0514 | val 0.1397 | acc 0.886 |   8.3 min
+done: final val 0.1607 | final test 0.1722 | best-val checkpoint (step 1000) test 0.1722 | test acc 0.8560 | 8.93 min
+
+===== [33/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'alpha': 0.3, 'seed': 0}  (sweep time so far 4.9 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3609.47it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.3_reset_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5508 | val 0.3429 | acc 0.746 |   0.9 min
+step   200 | rounds    4 | train 0.0878 | val 0.1069 | acc 0.916 |   1.8 min
+step   300 | rounds    6 | train 0.0810 | val 0.1064 | acc 0.918 |   2.6 min
+step   400 | rounds    8 | train 0.0705 | val 0.1211 | acc 0.904 |   3.5 min
+step   500 | rounds   10 | train 0.0666 | val 0.1146 | acc 0.914 |   4.3 min
+step   600 | rounds   12 | train 0.0593 | val 0.0987 | acc 0.920 |   5.1 min
+step   700 | rounds   14 | train 0.0545 | val 0.0961 | acc 0.928 |   6.0 min
+step   800 | rounds   16 | train 0.0588 | val 0.0879 | acc 0.924 |   6.8 min
+step   900 | rounds   18 | train 0.0507 | val 0.0973 | acc 0.924 |   7.6 min
+step  1000 | rounds   20 | train 0.0487 | val 0.1027 | acc 0.926 |   8.4 min
+done: final val 0.1251 | final test 0.1243 | best-val checkpoint (step 800) test 0.1220 | test acc 0.9020 | 9.05 min
+
+===== [34/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'alpha': 0.3, 'seed': 1}  (sweep time so far 5.0 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3502.51it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.3_reset_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5178 | val 0.2728 | acc 0.804 |   0.9 min
+step   200 | rounds    4 | train 0.0950 | val 0.1461 | acc 0.898 |   1.7 min
+step   300 | rounds    6 | train 0.0838 | val 0.1103 | acc 0.922 |   2.5 min
+step   400 | rounds    8 | train 0.0756 | val 0.1533 | acc 0.860 |   3.3 min
+step   500 | rounds   10 | train 0.0618 | val 0.0913 | acc 0.926 |   4.1 min
+step   600 | rounds   12 | train 0.0573 | val 0.0982 | acc 0.914 |   4.8 min
+step   700 | rounds   14 | train 0.0583 | val 0.0909 | acc 0.922 |   5.6 min
+step   800 | rounds   16 | train 0.0575 | val 0.1071 | acc 0.904 |   6.4 min
+step   900 | rounds   18 | train 0.0542 | val 0.0830 | acc 0.924 |   7.2 min
+step  1000 | rounds   20 | train 0.0456 | val 0.0890 | acc 0.924 |   8.0 min
+done: final val 0.1139 | final test 0.1261 | best-val checkpoint (step 900) test 0.1234 | test acc 0.8970 | 8.64 min
+
+===== [35/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'alpha': 1.0, 'seed': 0}  (sweep time so far 5.2 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3828.78it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir1.0_reset_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5847 | val 0.1429 | acc 0.896 |   1.0 min
+step   200 | rounds    4 | train 0.1181 | val 0.0985 | acc 0.924 |   1.9 min
+step   300 | rounds    6 | train 0.1033 | val 0.0789 | acc 0.932 |   2.8 min
+step   400 | rounds    8 | train 0.0868 | val 0.0676 | acc 0.948 |   3.8 min
+step   500 | rounds   10 | train 0.0772 | val 0.0608 | acc 0.944 |   4.7 min
+step   600 | rounds   12 | train 0.0736 | val 0.0637 | acc 0.948 |   5.6 min
+step   700 | rounds   14 | train 0.0713 | val 0.0580 | acc 0.950 |   6.6 min
+step   800 | rounds   16 | train 0.0568 | val 0.0568 | acc 0.952 |   7.5 min
+step   900 | rounds   18 | train 0.0584 | val 0.0566 | acc 0.946 |   8.5 min
+step  1000 | rounds   20 | train 0.0553 | val 0.0567 | acc 0.952 |   9.4 min
+done: final val 0.0810 | final test 0.1053 | best-val checkpoint (step 900) test 0.1070 | test acc 0.9100 | 10.05 min
+
+===== [36/278] {'mode': 'diloco', 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'agg': 'merge', 'inner_state': 'reset', 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'alpha': 1.0, 'seed': 1}  (sweep time so far 5.4 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3689.16it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir1.0_reset_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5873 | val 0.1227 | acc 0.892 |   1.0 min
+step   200 | rounds    4 | train 0.1226 | val 0.0883 | acc 0.928 |   1.9 min
+step   300 | rounds    6 | train 0.1026 | val 0.0826 | acc 0.934 |   2.8 min
+step   400 | rounds    8 | train 0.0856 | val 0.0601 | acc 0.950 |   3.7 min
+step   500 | rounds   10 | train 0.0816 | val 0.0588 | acc 0.952 |   4.6 min
+step   600 | rounds   12 | train 0.0713 | val 0.0563 | acc 0.946 |   5.5 min
+step   700 | rounds   14 | train 0.0660 | val 0.0552 | acc 0.940 |   6.4 min
+step   800 | rounds   16 | train 0.0641 | val 0.0544 | acc 0.952 |   7.4 min
+step   900 | rounds   18 | train 0.0560 | val 0.0580 | acc 0.950 |   8.2 min
+step  1000 | rounds   20 | train 0.0537 | val 0.0579 | acc 0.952 |   9.1 min
+done: final val 0.0888 | final test 0.1092 | best-val checkpoint (step 800) test 0.1020 | test acc 0.9150 | 9.85 min
+
+===== [37/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'dolly', 'block_size': 512, 'batch_size': 4, 'micro_batch': 4, 'split': 'group', 'down_rank': 16, 'seed': 0}  (sweep time so far 5.5 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3761.84it/s]
+run: dolly_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_group_reset_dr16_bs4_lr0.0003_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.5650 | val 2.6011 |   0.8 min
+step   200 | rounds    4 | train 2.4092 | val 2.5776 |   1.6 min
+step   300 | rounds    6 | train 2.4049 | val 2.5608 |   2.4 min
+step   400 | rounds    8 | train 2.3821 | val 2.5540 |   3.2 min
+step   500 | rounds   10 | train 2.4109 | val 2.5493 |   3.9 min
+step   600 | rounds   12 | train 2.3540 | val 2.5455 |   4.7 min
+step   700 | rounds   14 | train 2.3281 | val 2.5441 |   5.4 min
+step   800 | rounds   16 | train 2.3578 | val 2.5432 |   6.1 min
+step   900 | rounds   18 | train 2.3401 | val 2.5441 |   6.8 min
+step  1000 | rounds   20 | train 2.2946 | val 2.5459 |   7.5 min
+done: final val 2.5464 | final test 2.6392 | best-val checkpoint (step 800) test 2.6385 | 7.97 min
+
+===== [38/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'dolly', 'block_size': 512, 'batch_size': 4, 'micro_batch': 4, 'split': 'group', 'down_rank': 16, 'seed': 1}  (sweep time so far 5.7 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3702.54it/s]
+run: dolly_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_group_reset_dr16_bs4_lr0.0003_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.5279 | val 2.6059 |   0.9 min
+step   200 | rounds    4 | train 2.4262 | val 2.5761 |   1.6 min
+step   300 | rounds    6 | train 2.3875 | val 2.5610 |   2.4 min
+step   400 | rounds    8 | train 2.3727 | val 2.5540 |   3.3 min
+step   500 | rounds   10 | train 2.4022 | val 2.5480 |   4.1 min
+step   600 | rounds   12 | train 2.3651 | val 2.5456 |   4.8 min
+step   700 | rounds   14 | train 2.3538 | val 2.5421 |   5.5 min
+step   800 | rounds   16 | train 2.3838 | val 2.5405 |   6.2 min
+step   900 | rounds   18 | train 2.3240 | val 2.5391 |   6.9 min
+step  1000 | rounds   20 | train 2.3486 | val 2.5415 |   7.6 min
+done: final val 2.5420 | final test 2.6377 | best-val checkpoint (step 900) test 2.6368 | 8.01 min
+
+===== [39/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'dolly', 'block_size': 512, 'batch_size': 4, 'micro_batch': 4, 'split': 'group', 'down_rank': 64, 'seed': 0}  (sweep time so far 5.8 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3642.30it/s]
+run: dolly_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_group_reset_dr64_bs4_lr0.0003_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.5653 | val 2.6003 |   0.9 min
+step   200 | rounds    4 | train 2.4070 | val 2.5753 |   1.7 min
+step   300 | rounds    6 | train 2.4014 | val 2.5578 |   2.5 min
+step   400 | rounds    8 | train 2.3776 | val 2.5499 |   3.3 min
+step   500 | rounds   10 | train 2.4042 | val 2.5444 |   4.1 min
+step   600 | rounds   12 | train 2.3476 | val 2.5408 |   4.9 min
+step   700 | rounds   14 | train 2.3217 | val 2.5391 |   5.6 min
+step   800 | rounds   16 | train 2.3482 | val 2.5382 |   6.3 min
+step   900 | rounds   18 | train 2.3274 | val 2.5377 |   7.0 min
+step  1000 | rounds   20 | train 2.2807 | val 2.5379 |   7.8 min
+done: final val 2.5382 | final test 2.6328 | best-val checkpoint (step 900) test 2.6319 | 8.19 min
+
+===== [40/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'dolly', 'block_size': 512, 'batch_size': 4, 'micro_batch': 4, 'split': 'group', 'down_rank': 64, 'seed': 1}  (sweep time so far 5.9 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3673.64it/s]
+run: dolly_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_group_reset_dr64_bs4_lr0.0003_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.5272 | val 2.6063 |   0.9 min
+step   200 | rounds    4 | train 2.4247 | val 2.5720 |   1.7 min
+step   300 | rounds    6 | train 2.3846 | val 2.5570 |   2.5 min
+step   400 | rounds    8 | train 2.3684 | val 2.5505 |   3.3 min
+step   500 | rounds   10 | train 2.3968 | val 2.5450 |   4.1 min
+step   600 | rounds   12 | train 2.3593 | val 2.5395 |   4.8 min
+step   700 | rounds   14 | train 2.3474 | val 2.5361 |   5.5 min
+step   800 | rounds   16 | train 2.3755 | val 2.5349 |   6.2 min
+step   900 | rounds   18 | train 2.3104 | val 2.5342 |   6.9 min
+step  1000 | rounds   20 | train 2.3351 | val 2.5332 |   7.6 min
+done: final val 2.5350 | final test 2.6308 | best-val checkpoint (step 1000) test 2.6308 | 8.14 min
+
+===== [41/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'dolly', 'block_size': 512, 'batch_size': 4, 'micro_batch': 4, 'split': 'group', 'down_rank': 256, 'seed': 0}  (sweep time so far 6.1 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3498.17it/s]
+run: dolly_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_group_reset_dr256_bs4_lr0.0003_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.5650 | val 2.6002 |   0.9 min
+step   200 | rounds    4 | train 2.4079 | val 2.5740 |   1.7 min
+step   300 | rounds    6 | train 2.4001 | val 2.5585 |   2.5 min
+step   400 | rounds    8 | train 2.3769 | val 2.5497 |   3.3 min
+step   500 | rounds   10 | train 2.4035 | val 2.5448 |   4.2 min
+step   600 | rounds   12 | train 2.3466 | val 2.5413 |   4.9 min
+step   700 | rounds   14 | train 2.3208 | val 2.5380 |   5.6 min
+step   800 | rounds   16 | train 2.3463 | val 2.5368 |   6.3 min
+step   900 | rounds   18 | train 2.3246 | val 2.5358 |   7.0 min
+step  1000 | rounds   20 | train 2.2784 | val 2.5363 |   7.7 min
+done: final val 2.5374 | final test 2.6300 | best-val checkpoint (step 900) test 2.6312 | 8.2 min
+
+===== [42/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'dolly', 'block_size': 512, 'batch_size': 4, 'micro_batch': 4, 'split': 'group', 'down_rank': 256, 'seed': 1}  (sweep time so far 6.2 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3868.42it/s]
+run: dolly_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_group_reset_dr256_bs4_lr0.0003_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.5271 | val 2.6081 |   0.9 min
+step   200 | rounds    4 | train 2.4237 | val 2.5708 |   1.7 min
+step   300 | rounds    6 | train 2.3833 | val 2.5577 |   2.5 min
+step   400 | rounds    8 | train 2.3681 | val 2.5507 |   3.4 min
+step   500 | rounds   10 | train 2.3950 | val 2.5449 |   4.2 min
+step   600 | rounds   12 | train 2.3581 | val 2.5392 |   4.9 min
+step   700 | rounds   14 | train 2.3458 | val 2.5347 |   5.6 min
+step   800 | rounds   16 | train 2.3733 | val 2.5324 |   6.3 min
+step   900 | rounds   18 | train 2.3071 | val 2.5324 |   7.0 min
+step  1000 | rounds   20 | train 2.3307 | val 2.5320 |   7.7 min
+done: final val 2.5334 | final test 2.6291 | best-val checkpoint (step 1000) test 2.6291 | 8.16 min
+
+===== [43/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'alpha': 0.1, 'down_rank': 16, 'seed': 0}  (sweep time so far 6.3 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3603.86it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.1_reset_dr16_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5068 | val 0.4819 | acc 0.714 |   1.1 min
+step   200 | rounds    4 | train 0.1126 | val 0.2696 | acc 0.768 |   2.1 min
+step   300 | rounds    6 | train 0.0595 | val 0.5209 | acc 0.574 |   3.1 min
+step   400 | rounds    8 | train 0.0713 | val 0.2762 | acc 0.794 |   4.1 min
+step   500 | rounds   10 | train 0.0468 | val 0.3030 | acc 0.764 |   5.2 min
+step   600 | rounds   12 | train 0.0552 | val 0.2308 | acc 0.810 |   6.2 min
+step   700 | rounds   14 | train 0.0615 | val 0.3354 | acc 0.738 |   7.1 min
+step   800 | rounds   16 | train 0.0616 | val 0.2531 | acc 0.800 |   8.0 min
+step   900 | rounds   18 | train 0.0533 | val 0.2149 | acc 0.838 |   8.9 min
+step  1000 | rounds   20 | train 0.0582 | val 0.1933 | acc 0.870 |   9.9 min
+done: final val 0.2041 | final test 0.1989 | best-val checkpoint (step 1000) test 0.1989 | test acc 0.8390 | 10.6 min
+
+===== [44/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'alpha': 0.1, 'down_rank': 16, 'seed': 1}  (sweep time so far 6.5 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3596.40it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.1_reset_dr16_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5120 | val 0.5007 | acc 0.718 |   1.1 min
+step   200 | rounds    4 | train 0.0958 | val 0.4006 | acc 0.722 |   2.2 min
+step   300 | rounds    6 | train 0.1090 | val 0.2479 | acc 0.786 |   3.3 min
+step   400 | rounds    8 | train 0.0680 | val 0.4535 | acc 0.684 |   4.4 min
+step   500 | rounds   10 | train 0.0685 | val 0.1631 | acc 0.842 |   5.5 min
+step   600 | rounds   12 | train 0.0647 | val 0.4460 | acc 0.698 |   6.5 min
+step   700 | rounds   14 | train 0.0545 | val 0.2269 | acc 0.808 |   7.5 min
+step   800 | rounds   16 | train 0.0478 | val 0.2202 | acc 0.826 |   8.5 min
+step   900 | rounds   18 | train 0.0562 | val 0.1988 | acc 0.844 |   9.6 min
+step  1000 | rounds   20 | train 0.0503 | val 0.1826 | acc 0.862 |  10.6 min
+done: final val 0.2007 | final test 0.2014 | best-val checkpoint (step 500) test 0.1932 | test acc 0.8090 | 11.23 min
+
+===== [45/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'alpha': 0.1, 'down_rank': 64, 'seed': 0}  (sweep time so far 6.7 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3530.52it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.1_reset_dr64_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5094 | val 0.4390 | acc 0.716 |   1.1 min
+step   200 | rounds    4 | train 0.1200 | val 0.2908 | acc 0.742 |   2.2 min
+step   300 | rounds    6 | train 0.1101 | val 0.1949 | acc 0.848 |   3.2 min
+step   400 | rounds    8 | train 0.0660 | val 0.4348 | acc 0.740 |   4.2 min
+step   500 | rounds   10 | train 0.0430 | val 0.5302 | acc 0.652 |   5.2 min
+step   600 | rounds   12 | train 0.0659 | val 0.2346 | acc 0.804 |   6.2 min
+step   700 | rounds   14 | train 0.0544 | val 0.2943 | acc 0.786 |   7.2 min
+step   800 | rounds   16 | train 0.0586 | val 0.2356 | acc 0.804 |   8.1 min
+step   900 | rounds   18 | train 0.0516 | val 0.1713 | acc 0.866 |   9.1 min
+step  1000 | rounds   20 | train 0.0578 | val 0.1791 | acc 0.876 |  10.0 min
+done: final val 0.2027 | final test 0.1995 | best-val checkpoint (step 900) test 0.1930 | test acc 0.8430 | 10.75 min
+
+===== [46/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'alpha': 0.1, 'down_rank': 64, 'seed': 1}  (sweep time so far 6.9 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3656.11it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.1_reset_dr64_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5152 | val 0.4997 | acc 0.712 |   1.1 min
+step   200 | rounds    4 | train 0.0768 | val 1.3479 | acc 0.530 |   2.3 min
+step   300 | rounds    6 | train 0.0869 | val 1.3389 | acc 0.498 |   3.4 min
+step   400 | rounds    8 | train 0.0723 | val 0.7251 | acc 0.630 |   4.5 min
+step   500 | rounds   10 | train 0.0590 | val 0.3086 | acc 0.748 |   5.6 min
+step   600 | rounds   12 | train 0.0678 | val 0.3379 | acc 0.734 |   6.6 min
+step   700 | rounds   14 | train 0.0418 | val 0.2576 | acc 0.778 |   7.6 min
+step   800 | rounds   16 | train 0.0449 | val 0.2983 | acc 0.766 |   8.6 min
+step   900 | rounds   18 | train 0.0506 | val 0.2137 | acc 0.828 |   9.6 min
+step  1000 | rounds   20 | train 0.0421 | val 0.1898 | acc 0.866 |  10.6 min
+done: final val 0.2281 | final test 0.2141 | best-val checkpoint (step 1000) test 0.2141 | test acc 0.8380 | 11.31 min
+
+===== [47/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'alpha': 0.1, 'down_rank': 256, 'seed': 0}  (sweep time so far 7.1 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3656.72it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.1_reset_dr256_bs16_lr0.001_steps1000_s0
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5091 | val 0.4453 | acc 0.718 |   1.1 min
+step   200 | rounds    4 | train 0.1156 | val 0.2789 | acc 0.758 |   2.2 min
+step   300 | rounds    6 | train 0.0868 | val 0.1771 | acc 0.858 |   3.2 min
+step   400 | rounds    8 | train 0.0600 | val 0.6480 | acc 0.666 |   4.3 min
+step   500 | rounds   10 | train 0.0454 | val 0.5697 | acc 0.660 |   5.4 min
+step   600 | rounds   12 | train 0.0666 | val 0.2147 | acc 0.828 |   6.4 min
+step   700 | rounds   14 | train 0.0539 | val 0.3317 | acc 0.762 |   7.3 min
+step   800 | rounds   16 | train 0.0574 | val 0.2202 | acc 0.812 |   8.3 min
+step   900 | rounds   18 | train 0.0496 | val 0.1918 | acc 0.858 |   9.2 min
+step  1000 | rounds   20 | train 0.0577 | val 0.1868 | acc 0.878 |  10.2 min
+done: final val 0.2111 | final test 0.2082 | best-val checkpoint (step 300) test 0.1868 | test acc 0.8370 | 10.86 min
+
+===== [48/278] {'mode': 'diloco', 'agg': 'merge', 'inner_state': 'reset', 'k': 4, 'H': 50, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.001, 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'task': 'agnews', 'block_size': 256, 'batch_size': 16, 'micro_batch': 16, 'agnews_train': 40000, 'split': 'dirichlet', 'alpha': 0.1, 'down_rank': 256, 'seed': 1}  (sweep time so far 7.3 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3762.92it/s]
+run: agnews_gpt2_merge_r16_k4_H50_olr0.5_m0.9_nest_dir0.1_reset_dr256_bs16_lr0.001_steps1000_s1
+trainable: 2.36M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 4.5930 | acc 0.324 |   0.1 min
+step   100 | rounds    2 | train 0.5151 | val 0.5187 | acc 0.712 |   1.1 min
+step   200 | rounds    4 | train 0.0684 | val 3.1527 | acc 0.236 |   2.2 min
+step   300 | rounds    6 | train 0.1158 | val 0.9211 | acc 0.510 |   3.4 min
+step   400 | rounds    8 | train 0.0674 | val 0.7952 | acc 0.570 |   4.5 min
+step   500 | rounds   10 | train 0.0592 | val 0.2262 | acc 0.798 |   5.6 min
+step   600 | rounds   12 | train 0.0651 | val 0.4664 | acc 0.682 |   6.7 min
+step   700 | rounds   14 | train 0.0434 | val 0.2664 | acc 0.806 |   7.6 min
+step   800 | rounds   16 | train 0.0419 | val 0.3069 | acc 0.796 |   8.7 min
+step   900 | rounds   18 | train 0.0497 | val 0.1983 | acc 0.858 |   9.7 min
+step  1000 | rounds   20 | train 0.0410 | val 0.1761 | acc 0.870 |  10.7 min
+done: final val 0.2036 | final test 0.1952 | best-val checkpoint (step 1000) test 0.1952 | test acc 0.8460 | 11.35 min
+
+===== [49/278] {'model_name': 'HuggingFaceTB/SmolLM2-360M', 'task': 'dolly', 'block_size': 512, 'micro_batch': 2, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'mode': 'diloco', 'k': 4, 'H': 50, 'batch_size': 4, 'split': 'group', 'agg': 'fedit', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'seed': 0}  (sweep time so far 7.4 h)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  64%|██████▍   | 185/290 [00:00<00:00, 1811.69it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 1986.65it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (8479 > 8192). Running this sequence through the model will result in indexing errors
+run: dolly_SmolLM2-360M_fedit_r16_k4_H50_olr1.0_m0.0_group_bs4_lr0.0003_steps1000_s0
+trainable: 8.68M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.0596 |   0.5 min
+step   100 | rounds    2 | train 1.8124 | val 1.9675 | agg_err 0.137 |   5.6 min
+step   200 | rounds    4 | train 1.7351 | val 1.9570 | agg_err 0.071 |  10.6 min
+step   300 | rounds    6 | train 1.7210 | val 1.9535 | agg_err 0.049 |  15.7 min
+step   400 | rounds    8 | train 1.6982 | val 1.9481 | agg_err 0.032 |  20.9 min
+step   500 | rounds   10 | train 1.6875 | val 1.9457 | agg_err 0.020 |  26.0 min
+step   600 | rounds   12 | train 1.7224 | val 1.9435 | agg_err 0.010 |  31.3 min
+step   700 | rounds   14 | train 1.7110 | val 1.9428 | agg_err 0.005 |  36.4 min
+step   800 | rounds   16 | train 1.6911 | val 1.9413 | agg_err 0.002 |  41.5 min
+step   900 | rounds   18 | train 1.6580 | val 1.9414 | agg_err 0.001 |  46.6 min
+step  1000 | rounds   20 | train 1.6867 | val 1.9408 | agg_err 0.000 |  51.5 min
+done: final val 1.9473 | final test 1.9460 | best-val checkpoint (step 1000) test 1.9460 | 54.45 min
+
+===== [50/278] {'model_name': 'HuggingFaceTB/SmolLM2-360M', 'task': 'dolly', 'block_size': 512, 'micro_batch': 2, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'mode': 'diloco', 'k': 4, 'H': 50, 'batch_size': 4, 'split': 'group', 'agg': 'fedit', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'seed': 1}  (sweep time so far 8.4 h)
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  76%|███████▌  | 221/290 [00:00<00:00, 2143.77it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 2069.58it/s]
