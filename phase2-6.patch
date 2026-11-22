@@ -1,0 +1,104 @@
+diff --git a/configs/3_mechanism.yaml b/configs/3_mechanism.yaml
+index 6a363b1..4249c40 100644
+--- a/configs/3_mechanism.yaml
++++ b/configs/3_mechanism.yaml
+@@ -1,3 +1,5 @@
++# Nesterov outer lr per method = the value most often best on validation in 1_core (2026-11-22):
++# fedit 0.5, ffa 0.7, merge 0.5.
+ # Phase 3 -- WHY: how sync interval H, workers k and rank r change the momentum effect and the
+ # aggregation error. One factor at a time around the core setting (k=4, H=50, r=16),
+ # on the two non-i.i.d. settings, 2 seeds. Inexact (fedit) vs exact (ffa, merge).
+@@ -12,11 +14,12 @@ base:
+ grids:
+   - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
+     - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
+-  - - {agg: fedit}
+-    - {agg: ffa}
+-    - {agg: merge, inner_state: reset}
+-  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+-    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
++  - - {agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
++    - {agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
++    - {agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
+   - - {H: 10}
+     - {H: 25}
+     - {H: 100}
+diff --git a/configs/4_noniid.yaml b/configs/4_noniid.yaml
+index b31855a..81221bc 100644
+--- a/configs/4_noniid.yaml
++++ b/configs/4_noniid.yaml
+@@ -1,3 +1,5 @@
++# Nesterov outer lr per method = the value most often best on validation in 1_core (2026-11-22):
++# fedit 0.5, ffa 0.7, merge 0.5.
+ # Phase 4 -- strength of label skew on AG News (Dirichlet alpha; iid and 0.1 are in the core).
+ base:
+   mode: diloco
+@@ -14,11 +16,12 @@ base:
+   steps: 1000
+   lr: 0.001
+ grids:
+-  - - {agg: fedit}
+-    - {agg: ffa}
+-    - {agg: merge, inner_state: reset}
+-  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+-    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
++  - - {agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
++    - {agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
++    - {agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
+ sweep:
+   alpha: [0.05, 0.3, 1.0]
+   seed: [0, 1]
+diff --git a/configs/5_scale.yaml b/configs/5_scale.yaml
+index 606b2c3..6ad003f 100644
+--- a/configs/5_scale.yaml
++++ b/configs/5_scale.yaml
+@@ -1,3 +1,5 @@
++# Nesterov outer lr per method = the value most often best on validation in 1_core (2026-11-22):
++# fedit 0.5, ffa 0.7, merge 0.5.
+ # Phase 5 -- does it hold on a ~3x larger, modern model? SmolLM2-360M on Dolly (category split).
+ # Run 1 sync run first and check peak_mem_gb in its .json; drop micro_batch to 1 if it OOMs.
+ base:
+@@ -10,11 +12,13 @@ base:
+   steps: 1000
+   lr: 0.0003
+ grids:
+-  - - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: fedit}
+-    - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: ffa}
+-    - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group, agg: merge, inner_state: reset}
+-  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+-    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
++  - - {mode: diloco, k: 4, H: 50, batch_size: 4, split: group}
++  - - {agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
++    - {agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
++    - {agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
++    - {agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
+ sweep:
+   seed: [0, 1]
+ runs:
+diff --git a/configs/6_downlink.yaml b/configs/6_downlink.yaml
+index a68df36..f54acb3 100644
+--- a/configs/6_downlink.yaml
++++ b/configs/6_downlink.yaml
+@@ -1,3 +1,5 @@
++# Nesterov outer lr per method = the value most often best on validation in 1_core (2026-11-22):
++# fedit 0.5, ffa 0.7, merge 0.5.
+ # Phase 6 -- merge sends a DENSE update back to workers. How much of that can be cut by sending
+ # only a rank-r_d SVD of the update (with error feedback)? Communication/quality trade-off.
+ base:
+@@ -10,7 +12,7 @@ base:
+   lora_alpha: 32
+   steps: 1000
+   lr: 0.0003
+-  outer_lr: 0.7
++  outer_lr: 0.5
+   outer_momentum: 0.9
+   nesterov: true
+ grids:

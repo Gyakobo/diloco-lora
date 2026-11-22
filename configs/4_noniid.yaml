@@ -1,3 +1,5 @@
+# Nesterov outer lr per method = the value most often best on validation in 1_core (2026-11-22):
+# fedit 0.5, ffa 0.7, merge 0.5.
 # Phase 4 -- strength of label skew on AG News (Dirichlet alpha; iid and 0.1 are in the core).
 base:
   mode: diloco
@@ -14,11 +16,12 @@ base:
   steps: 1000
   lr: 0.001
 grids:
-  - - {agg: fedit}
-    - {agg: ffa}
-    - {agg: merge, inner_state: reset}
-  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
-    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+  - - {agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
+    - {agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+    - {agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
 sweep:
   alpha: [0.05, 0.3, 1.0]
   seed: [0, 1]

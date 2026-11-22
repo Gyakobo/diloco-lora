@@ -1,3 +1,5 @@
+# Nesterov outer lr per method = the value most often best on validation in 1_core (2026-11-22):
+# fedit 0.5, ffa 0.7, merge 0.5.
 # Phase 6 -- merge sends a DENSE update back to workers. How much of that can be cut by sending
 # only a rank-r_d SVD of the update (with error feedback)? Communication/quality trade-off.
 base:
@@ -10,7 +12,7 @@ base:
   lora_alpha: 32
   steps: 1000
   lr: 0.0003
-  outer_lr: 0.7
+  outer_lr: 0.5
   outer_momentum: 0.9
   nesterov: true
 grids:

@@ -1,3 +1,5 @@
+# Nesterov outer lr per method = the value most often best on validation in 1_core (2026-11-22):
+# fedit 0.5, ffa 0.7, merge 0.5.
 # Phase 3 -- WHY: how sync interval H, workers k and rank r change the momentum effect and the
 # aggregation error. One factor at a time around the core setting (k=4, H=50, r=16),
 # on the two non-i.i.d. settings, 2 seeds. Inexact (fedit) vs exact (ffa, merge).
@@ -12,11 +14,12 @@ base:
 grids:
   - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
     - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
-  - - {agg: fedit}
-    - {agg: ffa}
-    - {agg: merge, inner_state: reset}
-  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
-    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+  - - {agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
+    - {agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+    - {agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+    - {agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true}
   - - {H: 10}
     - {H: 25}
     - {H: 100}
