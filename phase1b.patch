@@ -1,0 +1,131 @@
+diff --git a/configs/1b_core_seeds.yaml b/configs/1b_core_seeds.yaml
+index bd8601d..de1f33a 100644
+--- a/configs/1b_core_seeds.yaml
++++ b/configs/1b_core_seeds.yaml
+@@ -1,25 +1,73 @@
+-# Phase 1b -- seeds 1 and 2 for the headline comparison (64 runs).
+-# BEFORE RUNNING: replace the Nesterov outer_lr (0.7 below) with the best value per
+-# (setting, agg) from 1_core.yaml (python aggregate.py prints it). Pre-commit to the rule
+-# "best seed-0 val loss" so the choice is not made after seeing seeds 1-2.
+-base:
+-  mode: diloco
+-  k: 4
+-  H: 50
+-  rank: 16
+-  lora_alpha: 32
+-  steps: 1000
+-  lr: 0.0003
+-grids:
+-  - - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: iid}
+-    - {task: dolly,  block_size: 512, batch_size: 4,  micro_batch: 4,  split: group}
+-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid}
+-    - {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1}
+-  - - {agg: fedit}
+-    - {agg: ffa}
+-    - {agg: fedex}
+-    - {agg: merge, inner_state: reset}
+-  - - {outer_lr: 1.0, outer_momentum: 0.0, nesterov: false}
+-    - {outer_lr: 0.7, outer_momentum: 0.9, nesterov: true}
+-sweep:
+-  seed: [1, 2]
++# Phase 1b -- seeds 1 and 2 for the headline comparison (64 runs, ~8.6 h).
++# Nesterov outer lr per (setting, agg) = best seed-0 VALIDATION loss from 1_core.yaml
++# (python aggregate.py --tune, 2026-11-21). Rule fixed before seeing seeds 1-2.
++base: {mode: diloco, k: 4, H: 50, rank: 16, lora_alpha: 32, steps: 1000}
++runs:
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: ffa, outer_lr: 1.0, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: ffa, outer_lr: 1.0, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: fedex, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: fedex, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: fedex, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: fedex, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: iid, agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: fedex, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: fedex, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: fedex, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: fedex, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: dolly, block_size: 512, batch_size: 4, micro_batch: 4, lr: 0.0003, split: group, agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: ffa, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: fedex, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: fedex, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: fedex, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: fedex, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: iid, agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: fedit, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: fedit, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: ffa, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: ffa, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: ffa, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: fedex, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: fedex, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: fedex, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true, seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: fedex, outer_lr: 0.7, outer_momentum: 0.9, nesterov: true, seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false,
++  seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: merge, inner_state: reset, outer_lr: 1.0, outer_momentum: 0.0, nesterov: false,
++  seed: 2}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true,
++  seed: 1}
++- {task: agnews, block_size: 256, batch_size: 16, micro_batch: 16, agnews_train: 40000, lr: 0.001, split: dirichlet, alpha: 0.1, agg: merge, inner_state: reset, outer_lr: 0.5, outer_momentum: 0.9, nesterov: true,
++  seed: 2}
+diff --git a/sweep.py b/sweep.py
+index b4431df..251fe4e 100644
+--- a/sweep.py
++++ b/sweep.py
+@@ -35,15 +35,21 @@ def expand(path):
+     grids = spec.get("grids", [])
+     bundles = [{k: v for b in combo for k, v in b.items()} for combo in itertools.product(*grids)] \
+         if grids else [{}]
++    explicit = spec.get("runs", []) or []
+     runs = []
+     if "sweep" in spec:
++        # sweep crosses the grids; with no grids it crosses the explicit runs instead
++        # (never the bare base, which would be a run with no task settings)
++        targets, explicit_used = (bundles, False) if grids or not explicit else (explicit, True)
+         keys = list(spec["sweep"].keys())
+-        for bundle in bundles:
++        for bundle in targets:
+             for values in itertools.product(*[spec["sweep"][k] for k in keys]):
+                 runs.append({**base, **bundle, **dict(zip(keys, values))})
++        if explicit_used:
++            return runs
+     elif grids:
+         runs += [{**base, **b} for b in bundles]
+-    for r in spec.get("runs", []) or []:
++    for r in explicit:
+         runs.append({**base, **r})
+     return runs
+ 

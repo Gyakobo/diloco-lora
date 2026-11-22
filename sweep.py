@@ -35,15 +35,21 @@ def expand(path):
     grids = spec.get("grids", [])
     bundles = [{k: v for b in combo for k, v in b.items()} for combo in itertools.product(*grids)] \
         if grids else [{}]
+    explicit = spec.get("runs", []) or []
     runs = []
     if "sweep" in spec:
+        # sweep crosses the grids; with no grids it crosses the explicit runs instead
+        # (never the bare base, which would be a run with no task settings)
+        targets, explicit_used = (bundles, False) if grids or not explicit else (explicit, True)
         keys = list(spec["sweep"].keys())
-        for bundle in bundles:
+        for bundle in targets:
             for values in itertools.product(*[spec["sweep"][k] for k in keys]):
                 runs.append({**base, **bundle, **dict(zip(keys, values))})
+        if explicit_used:
+            return runs
     elif grids:
         runs += [{**base, **b} for b in bundles]
-    for r in spec.get("runs", []) or []:
+    for r in explicit:
         runs.append({**base, **r})
     return runs
 
