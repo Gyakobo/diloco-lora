@@ -83,3 +83,9 @@ run: dolly_gpt2_fedit_r16_k4_H50_olr1.0_m0.0_iid_bs4_lr0.0003_steps1000_s1
 trainable: 2.36M | device cuda | dtype bf16
 step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
 step   100 | rounds    2 | train 2.6313 | val 2.5663 | agg_err 0.070 |   0.7 min
+step   200 | rounds    4 | train 2.5425 | val 2.5446 | agg_err 0.045 |   1.4 min
+step   300 | rounds    6 | train 2.4531 | val 2.5379 | agg_err 0.028 |   2.0 min
+step   400 | rounds    8 | train 2.4928 | val 2.5299 | agg_err 0.019 |   2.6 min
+step   500 | rounds   10 | train 2.4811 | val 2.5240 | agg_err 0.011 |   3.1 min
+step   600 | rounds   12 | train 2.4480 | val 2.5199 | agg_err 0.006 |   3.7 min
+step   700 | rounds   14 | train 2.4354 | val 2.5169 | agg_err 0.003 |   4.3 min
