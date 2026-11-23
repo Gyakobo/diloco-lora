@@ -1493,3 +1493,41 @@ done: final val 2.4984 | final test 2.5923 | best-val checkpoint (step 800) test
 run: dolly_gpt2_full_k4_H50_olr0.7_m0.9_nest_group_bs4_lr5e-05_steps1000_s0
 trainable: 124.44M | device cuda | dtype bf16
 step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.5008 | val 2.5812 |   2.2 min
+step   200 | rounds    4 | train 2.3871 | val 2.5510 |   5.4 min
+step   300 | rounds    6 | train 2.3787 | val 2.5469 |   8.7 min
+step   400 | rounds    8 | train 2.3592 | val 2.5486 |  12.0 min
+step   500 | rounds   10 | train 2.3849 | val 2.5505 |  15.1 min
+step   600 | rounds   12 | train 2.3407 | val 2.5565 |  18.3 min
+step   700 | rounds   14 | train 2.3188 | val 2.5554 |  21.6 min
+step   800 | rounds   16 | train 2.2655 | val 2.5616 |  24.8 min
+step   900 | rounds   18 | train 2.0496 | val 2.5927 |  28.1 min
+step  1000 | rounds   20 | train 1.9643 | val 2.6078 |  31.3 min
+done: final val 2.6127 | final test 2.7083 | best-val checkpoint (step 300) test 2.6471 | 31.7 min
+
+===== [73/278] {'mode': 'diloco', 'agg': 'full', 'k': 4, 'H': 50, 'steps': 1000, 'lr': 5e-05, 'task': 'dolly', 'block_size': 512, 'batch_size': 4, 'micro_batch': 4, 'split': 'group', 'outer_lr': 0.7, 'outer_momentum': 0.9, 'nesterov': True, 'seed': 1}  (sweep time so far 24.2 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3072.69it/s]
+run: dolly_gpt2_full_k4_H50_olr0.7_m0.9_nest_group_bs4_lr5e-05_steps1000_s1
+trainable: 124.44M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.4650 | val 2.5788 |   2.7 min
+step   200 | rounds    4 | train 2.4039 | val 2.5459 |   6.6 min
+step   300 | rounds    6 | train 2.3611 | val 2.5429 |  10.4 min
+step   400 | rounds    8 | train 2.3476 | val 2.5468 |  14.2 min
+step   500 | rounds   10 | train 2.3797 | val 2.5467 |  18.0 min
+step   600 | rounds   12 | train 2.3494 | val 2.5496 |  21.8 min
+step   700 | rounds   14 | train 2.3461 | val 2.5545 |  25.7 min
+step   800 | rounds   16 | train 2.2984 | val 2.5587 |  29.6 min
+step   900 | rounds   18 | train 2.0302 | val 2.5890 |  33.4 min
+step  1000 | rounds   20 | train 2.0004 | val 2.6008 |  37.2 min
+done: final val 2.6077 | final test 2.7061 | best-val checkpoint (step 300) test 2.6437 | 37.64 min
+
+===== [74/278] {'mode': 'diloco', 'agg': 'full', 'k': 4, 'H': 50, 'steps': 1000, 'lr': 5e-05, 'task': 'dolly', 'block_size': 512, 'batch_size': 4, 'micro_batch': 4, 'split': 'group', 'outer_lr': 0.7, 'outer_momentum': 0.9, 'nesterov': True, 'seed': 2}  (sweep time so far 24.8 h)
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3705.19it/s]
+run: dolly_gpt2_full_k4_H50_olr0.7_m0.9_nest_group_bs4_lr5e-05_steps1000_s2
+trainable: 124.44M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.9399 |   0.1 min
+step   100 | rounds    2 | train 2.4692 | val 2.5908 |   3.1 min
+step   200 | rounds    4 | train 2.3999 | val 2.5497 |   7.8 min
+step   300 | rounds    6 | train 2.3996 | val 2.5405 |  12.6 min
+step   400 | rounds    8 | train 2.3144 | val 2.5492 |  17.1 min
