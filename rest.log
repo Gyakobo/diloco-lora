@@ -1531,3 +1531,8 @@ step   100 | rounds    2 | train 2.4692 | val 2.5908 |   3.1 min
 step   200 | rounds    4 | train 2.3999 | val 2.5497 |   7.8 min
 step   300 | rounds    6 | train 2.3996 | val 2.5405 |  12.6 min
 step   400 | rounds    8 | train 2.3144 | val 2.5492 |  17.1 min
+step   500 | rounds   10 | train 2.3564 | val 2.5529 |  21.5 min
+step   600 | rounds   12 | train 2.3800 | val 2.5562 |  26.0 min
+step   700 | rounds   14 | train 2.3885 | val 2.5570 |  30.8 min
+step   800 | rounds   16 | train 2.2697 | val 2.5622 |  35.4 min
+step   900 | rounds   18 | train 2.0257 | val 2.5924 |  40.1 min
