@@ -1116,3 +1116,81 @@ done: final val 1.9473 | final test 1.9460 | best-val checkpoint (step 1000) tes
 
 ===== [50/278] {'model_name': 'HuggingFaceTB/SmolLM2-360M', 'task': 'dolly', 'block_size': 512, 'micro_batch': 2, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'mode': 'diloco', 'k': 4, 'H': 50, 'batch_size': 4, 'split': 'group', 'agg': 'fedit', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'seed': 1}  (sweep time so far 8.4 h)
 Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  76%|███████▌  | 221/290 [00:00<00:00, 2143.77it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 2069.58it/s]
+run: dolly_SmolLM2-360M_fedit_r16_k4_H50_olr1.0_m0.0_group_bs4_lr0.0003_steps1000_s1
+trainable: 8.68M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.0596 |   0.7 min
+step   100 | rounds    2 | train 1.7814 | val 1.9677 | agg_err 0.132 |   5.9 min
+step   200 | rounds    4 | train 1.7092 | val 1.9580 | agg_err 0.073 |  10.9 min
+step   300 | rounds    6 | train 1.7298 | val 1.9529 | agg_err 0.050 |  16.1 min
+step   400 | rounds    8 | train 1.7093 | val 1.9487 | agg_err 0.032 |  21.3 min
+step   500 | rounds   10 | train 1.7238 | val 1.9448 | agg_err 0.018 |  26.4 min
+step   600 | rounds   12 | train 1.6987 | val 1.9427 | agg_err 0.010 |  31.6 min
+step   700 | rounds   14 | train 1.7296 | val 1.9412 | agg_err 0.005 |  36.9 min
+step   800 | rounds   16 | train 1.6847 | val 1.9408 | agg_err 0.002 |  42.0 min
+step   900 | rounds   18 | train 1.6964 | val 1.9408 | agg_err 0.001 |  47.2 min
+step  1000 | rounds   20 | train 1.6898 | val 1.9403 | agg_err 0.000 |  52.3 min
+done: final val 1.9468 | final test 1.9460 | best-val checkpoint (step 1000) test 1.9460 | 55.45 min
+
+===== [51/278] {'model_name': 'HuggingFaceTB/SmolLM2-360M', 'task': 'dolly', 'block_size': 512, 'micro_batch': 2, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'mode': 'diloco', 'k': 4, 'H': 50, 'batch_size': 4, 'split': 'group', 'agg': 'fedit', 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'seed': 0}  (sweep time so far 9.3 h)
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  79%|███████▊  | 228/290 [00:00<00:00, 2205.92it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 2252.10it/s]
+run: dolly_SmolLM2-360M_fedit_r16_k4_H50_olr0.5_m0.9_nest_group_bs4_lr0.0003_steps1000_s0
+trainable: 8.68M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.0596 |   0.6 min
+step   100 | rounds    2 | train 1.8127 | val 1.9757 | agg_err 0.139 |   5.6 min
+step   200 | rounds    4 | train 1.7339 | val 1.9610 | agg_err 0.058 |  10.7 min
+step   300 | rounds    6 | train 1.7171 | val 1.9510 | agg_err 0.029 |  15.8 min
+step   400 | rounds    8 | train 1.6933 | val 1.9460 | agg_err 0.014 |  20.9 min
+step   500 | rounds   10 | train 1.6815 | val 1.9422 | agg_err 0.007 |  26.1 min
+step   600 | rounds   12 | train 1.7169 | val 1.9407 | agg_err 0.003 |  31.2 min
+step   700 | rounds   14 | train 1.7069 | val 1.9415 | agg_err 0.001 |  36.3 min
+step   800 | rounds   16 | train 1.6702 | val 1.9415 | agg_err 0.000 |  41.2 min
+step   900 | rounds   18 | train 1.6039 | val 1.9436 | agg_err 0.000 |  46.3 min
+step  1000 | rounds   20 | train 1.6186 | val 1.9469 | agg_err 0.000 |  51.4 min
+done: final val 1.9531 | final test 1.9553 | best-val checkpoint (step 600) test 1.9484 | 54.28 min
+
+===== [52/278] {'model_name': 'HuggingFaceTB/SmolLM2-360M', 'task': 'dolly', 'block_size': 512, 'micro_batch': 2, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'mode': 'diloco', 'k': 4, 'H': 50, 'batch_size': 4, 'split': 'group', 'agg': 'fedit', 'outer_lr': 0.5, 'outer_momentum': 0.9, 'nesterov': True, 'seed': 1}  (sweep time so far 10.2 h)
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  74%|███████▍  | 215/290 [00:00<00:00, 2148.05it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 2166.93it/s]
+run: dolly_SmolLM2-360M_fedit_r16_k4_H50_olr0.5_m0.9_nest_group_bs4_lr0.0003_steps1000_s1
+trainable: 8.68M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.0596 |   0.4 min
+step   100 | rounds    2 | train 1.7819 | val 1.9794 | agg_err 0.134 |   5.7 min
+step   200 | rounds    4 | train 1.7092 | val 1.9614 | agg_err 0.061 |  10.9 min
+step   300 | rounds    6 | train 1.7254 | val 1.9513 | agg_err 0.028 |  16.0 min
+step   400 | rounds    8 | train 1.7047 | val 1.9462 | agg_err 0.014 |  21.2 min
+step   500 | rounds   10 | train 1.7193 | val 1.9417 | agg_err 0.006 |  26.4 min
+step   600 | rounds   12 | train 1.6928 | val 1.9398 | agg_err 0.003 |  31.6 min
+step   700 | rounds   14 | train 1.7243 | val 1.9394 | agg_err 0.001 |  36.7 min
+step   800 | rounds   16 | train 1.6625 | val 1.9409 | agg_err 0.000 |  41.8 min
+step   900 | rounds   18 | train 1.6394 | val 1.9430 | agg_err 0.000 |  46.9 min
+step  1000 | rounds   20 | train 1.6242 | val 1.9457 | agg_err 0.000 |  52.1 min
+done: final val 1.9525 | final test 1.9546 | best-val checkpoint (step 700) test 1.9468 | 55.08 min
+
+===== [53/278] {'model_name': 'HuggingFaceTB/SmolLM2-360M', 'task': 'dolly', 'block_size': 512, 'micro_batch': 2, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'mode': 'diloco', 'k': 4, 'H': 50, 'batch_size': 4, 'split': 'group', 'agg': 'ffa', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'seed': 0}  (sweep time so far 11.1 h)
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  76%|███████▌  | 219/290 [00:00<00:00, 2164.21it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 2184.38it/s]
+run: dolly_SmolLM2-360M_ffa_r16_k4_H50_olr1.0_m0.0_group_bs4_lr0.0003_steps1000_s0
+trainable: 4.42M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.0596 |   0.5 min
+step   100 | rounds    2 | train 1.8307 | val 1.9821 |   5.3 min
+step   200 | rounds    4 | train 1.7517 | val 1.9696 |  10.1 min
+step   300 | rounds    6 | train 1.7358 | val 1.9650 |  14.8 min
+step   400 | rounds    8 | train 1.7134 | val 1.9604 |  19.5 min
+step   500 | rounds   10 | train 1.7047 | val 1.9584 |  24.2 min
+step   600 | rounds   12 | train 1.7408 | val 1.9562 |  29.0 min
+step   700 | rounds   14 | train 1.7286 | val 1.9558 |  33.7 min
+step   800 | rounds   16 | train 1.7126 | val 1.9545 |  38.5 min
+step   900 | rounds   18 | train 1.6849 | val 1.9545 |  43.2 min
+step  1000 | rounds   20 | train 1.7172 | val 1.9542 |  48.0 min
+done: final val 1.9605 | final test 1.9591 | best-val checkpoint (step 1000) test 1.9591 | 51.12 min
+
+===== [54/278] {'model_name': 'HuggingFaceTB/SmolLM2-360M', 'task': 'dolly', 'block_size': 512, 'micro_batch': 2, 'rank': 16, 'lora_alpha': 32, 'steps': 1000, 'lr': 0.0003, 'mode': 'diloco', 'k': 4, 'H': 50, 'batch_size': 4, 'split': 'group', 'agg': 'ffa', 'outer_lr': 1.0, 'outer_momentum': 0.0, 'nesterov': False, 'seed': 1}  (sweep time so far 12.0 h)
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  79%|███████▉  | 230/290 [00:00<00:00, 2282.76it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 2286.55it/s]
+run: dolly_SmolLM2-360M_ffa_r16_k4_H50_olr1.0_m0.0_group_bs4_lr0.0003_steps1000_s1
+trainable: 4.42M | device cuda | dtype bf16
+step     0 | rounds    0 | train   -    | val 2.0596 |   0.5 min
+step   100 | rounds    2 | train 1.8015 | val 1.9845 |   5.2 min
+step   200 | rounds    4 | train 1.7248 | val 1.9707 |   9.9 min
+step   300 | rounds    6 | train 1.7446 | val 1.9645 |  14.6 min
+step   400 | rounds    8 | train 1.7249 | val 1.9614 |  19.4 min
+step   500 | rounds   10 | train 1.7415 | val 1.9579 |  24.1 min
+step   600 | rounds   12 | train 1.7155 | val 1.9567 |  28.9 min
+step   700 | rounds   14 | train 1.7484 | val 1.9553 |  33.6 min
