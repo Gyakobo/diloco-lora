@@ -1,0 +1,108 @@
+{
+  "config": {
+    "mode": "diloco",
+    "agg": "fedit",
+    "k": 8,
+    "H": 50,
+    "outer_lr": 0.5,
+    "outer_momentum": 0.9,
+    "nesterov": true,
+    "inner_state": "keep",
+    "down_rank": 0,
+    "task": "agnews",
+    "split": "dirichlet",
+    "alpha": 0.1,
+    "split_seed": 0,
+    "agnews_train": 40000,
+    "block_size": 256,
+    "model_name": "gpt2",
+    "rank": 16,
+    "lora_alpha": 32.0,
+    "targets": "",
+    "model_dropout": 0.0,
+    "steps": 1000,
+    "batch_size": 16,
+    "micro_batch": 16,
+    "lr": 0.001,
+    "min_lr_ratio": 0.1,
+    "warmup": 50,
+    "weight_decay": 0.0,
+    "grad_clip": 1.0,
+    "eval_interval": 100,
+    "eval_examples": 500,
+    "seed": 0,
+    "dtype": "bf16",
+    "device": "cuda",
+    "data_dir": "data",
+    "out_dir": "results",
+    "name": "",
+    "force": false
+  },
+  "name": "agnews_gpt2_fedit_r16_k8_H50_olr0.5_m0.9_nest_dir0.1_bs16_lr0.001_steps1000_s0",
+  "split_counts": [
+    [
+      0,
+      1,
+      24,
+      2517
+    ],
+    [
+      0,
+      4646,
+      4,
+      0
+    ],
+    [
+      1866,
+      0,
+      0,
+      6364
+    ],
+    [
+      5,
+      4607,
+      0,
+      6
+    ],
+    [
+      68,
+      4,
+      762,
+      3
+    ],
+    [
+      5282,
+      45,
+      4,
+      278
+    ],
+    [
+      854,
+      4,
+      6980,
+      979
+    ],
+    [
+      1950,
+      665,
+      2081,
+      1
+    ]
+  ],
+  "final_val_loss": 0.09091891254028005,
+  "final_val_acc": 0.935,
+  "final_test_loss": 0.11117646123483023,
+  "final_test_acc": 0.897,
+  "best_val_loss": 0.06881544956366865,
+  "best_step": 900,
+  "best_test_loss": 0.11038951264529288,
+  "best_test_acc": 0.902,
+  "diverged": false,
+  "steps_done": 1000,
+  "comm_rounds": 20,
+  "comm_up": 47185920,
+  "comm_down": 47185920,
+  "trainable_params": 2359296,
+  "minutes": 19.63,
+  "peak_mem_gb": 6.81
+}
